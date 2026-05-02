@@ -20,6 +20,43 @@ on:
         required: true
         type: string
 
+      # ── Optional tweaks ────────────────────────────────────────────────────
+      youpip:
+        description: "Integrate YouPiP"
+        default: true
+        required: false
+        type: boolean
+
+      ytuhd:
+        description: "Integrate YTUHD"
+        default: true
+        required: false
+        type: boolean
+
+      ryd:
+        description: "Integrate Return YouTube Dislikes"
+        default: true
+        required: false
+        type: boolean
+
+      ygs:
+        description: "Integrate YouGroupSettings"
+        default: true
+        required: false
+        type: boolean
+
+      ytabconfig:
+        description: "Integrate YTABConfig"
+        default: true
+        required: false
+        type: boolean
+
+      youquality:
+        description: "Integrate YouQuality"
+        default: true
+        required: false
+        type: boolean
+
       demc:
         description: "Integrate DontEatMyContent"
         default: true
@@ -50,7 +87,7 @@ jobs:
       - name: Hide Sensitive Inputs
         uses: levibostian/action-hide-sensitive-inputs@v1
         with:
-          exclude_inputs: bundle_id,display_name,demc,ytvid
+          exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,ygs,ytabconfig,youquality,demc,ytvid
 
       - name: Download and Validate IPA
         run: |
@@ -101,7 +138,7 @@ jobs:
           pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
           wget --quiet --no-verbose "https://github.com/inoahdev/tbd/releases/download/2.2/tbd-mac" -O /usr/local/bin/tbd
           chmod +x /usr/local/bin/tbd
-          
+
       - name: Clone Open in YouTube (Safari Extension)
         run: |
           git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/BillyCurtis/OpenYouTubeSafariExtension.git
@@ -127,12 +164,18 @@ jobs:
 
       - name: Clone YTVideoOverlay
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
-          
+
       - name: Cache Tweaks
         id: cache_tweaks
         uses: ./.github/actions/cache-tweaks
         with:
           sdk_version: '18.6'
+          youpip: ${{ inputs.youpip }}
+          ytuhd: ${{ inputs.ytuhd }}
+          ryd: ${{ inputs.ryd }}
+          ygs: ${{ inputs.ygs }}
+          ytabconfig: ${{ inputs.ytabconfig }}
+          youquality: ${{ inputs.youquality }}
           demc: ${{ inputs.demc }}
           ytvid: ${{ inputs.ytvid }}
           theos_commit: ${{ steps.commit_hashes.outputs.theos }}
@@ -162,42 +205,42 @@ jobs:
           mv ../ytlite.deb ${{ github.workspace }}/ytlite.deb
 
       - name: Clone and Build YouPiP
-        if: steps.cache_tweaks.outputs.cache_youpip_hit != 'true'
+        if: inputs.youpip == true && steps.cache_tweaks.outputs.cache_youpip_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouPiP.git
           cd YouPiP && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youpip.deb
 
       - name: Clone and Build YTUHD
-        if: steps.cache_tweaks.outputs.cache_ytuhd_hit != 'true'
+        if: inputs.ytuhd == true && steps.cache_tweaks.outputs.cache_ytuhd_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
           cd YTUHD && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless SIDELOAD=1
           mv packages/*.deb ${{ github.workspace }}/ytuhd.deb
 
       - name: Clone and Build Return-YouTube-Dislikes
-        if: steps.cache_tweaks.outputs.cache_ryd_hit != 'true'
+        if: inputs.ryd == true && steps.cache_tweaks.outputs.cache_ryd_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/PoomSmart/Return-YouTube-Dislikes.git
           cd Return-YouTube-Dislikes && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ryd.deb
 
       - name: Clone and Build YouGroupSettings
-        if: steps.cache_tweaks.outputs.cache_ygs_hit != 'true'
+        if: inputs.ygs == true && steps.cache_tweaks.outputs.cache_ygs_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouGroupSettings.git
           cd YouGroupSettings && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ygs.deb
 
       - name: Clone and Build YTABConfig
-        if: steps.cache_tweaks.outputs.cache_ytabconfig_hit != 'true'
+        if: inputs.ytabconfig == true && steps.cache_tweaks.outputs.cache_ytabconfig_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/PoomSmart/YTABConfig.git
           cd YTABConfig && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ytabconfig.deb
-  
+
       - name: Clone and Build YouQuality
-        if: steps.cache_tweaks.outputs.cache_youquality_hit != 'true'
+        if: inputs.youquality == true && steps.cache_tweaks.outputs.cache_youquality_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouQuality.git
           cd YouQuality && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless

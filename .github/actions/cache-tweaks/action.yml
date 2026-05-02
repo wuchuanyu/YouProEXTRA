@@ -4,6 +4,24 @@ description: Caches built .deb files per tweak, keyed on commit hash + SDK versi
 inputs:
   sdk_version:
     required: true
+  youpip:
+    required: false
+    default: 'true'
+  ytuhd:
+    required: false
+    default: 'true'
+  ryd:
+    required: false
+    default: 'true'
+  ygs:
+    required: false
+    default: 'true'
+  ytabconfig:
+    required: false
+    default: 'true'
+  youquality:
+    required: false
+    default: 'true'
   isponsorblock:
     required: false
     default: 'false'
@@ -30,31 +48,44 @@ inputs:
   youquality_commit:
     required: true
   youspeed_commit:
-    required: true
+    required: false
+    default: ''
   youmute_commit:
-    required: true
+    required: false
+    default: ''
   youloop_commit:
-    required: true
+    required: false
+    default: ''
   alderis_commit:
-    required: true
+    required: false
+    default: ''
   youslider_commit:
-    required: true
+    required: false
+    default: ''
   youchoose_commit:
-    required: true
+    required: false
+    default: ''
   ytsilentvote_commit:
-    required: true
+    required: false
+    default: ''
   youshare_commit:
-    required: true
+    required: false
+    default: ''
   gonerino_commit:
-    required: true
+    required: false
+    default: ''
   ytweaks_commit:
-    required: true
+    required: false
+    default: ''
   yougetcaption_commit:
-    required: true
+    required: false
+    default: ''
   ytflags_commit:
-    required: true
+    required: false
+    default: ''
   iamyoutube_commit:
-    required: true
+    required: false
+    default: ''
   isponsorblock_commit:
     required: false
     default: 'disabled'
@@ -93,47 +124,54 @@ outputs:
 runs:
   using: composite
   steps:
+
     - uses: actions/cache@v4
+      if: inputs.youpip == 'true'
       id: cache_youpip
       with:
         path: ${{ github.workspace }}/youpip.deb
         key: youpip-${{ inputs.youpip_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v4
+      if: inputs.ytuhd == 'true'
       id: cache_ytuhd
       with:
         path: ${{ github.workspace }}/ytuhd.deb
         key: ytuhd-${{ inputs.ytuhd_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v4
+      if: inputs.ryd == 'true'
       id: cache_ryd
       with:
         path: ${{ github.workspace }}/ryd.deb
         key: ryd-${{ inputs.ryd_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v4
+      if: inputs.ygs == 'true'
       id: cache_ygs
       with:
         path: ${{ github.workspace }}/ygs.deb
         key: ygs-${{ inputs.ygs_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v4
-      id: cache_ytvo
-      with:
-        path: ${{ github.workspace }}/ytvo.deb
-        key: ytvo-${{ inputs.ytvo_commit }}-sdk${{ inputs.sdk_version }}
-
-    - uses: actions/cache@v4
+      if: inputs.ytabconfig == 'true'
       id: cache_ytabconfig
       with:
         path: ${{ github.workspace }}/ytabconfig.deb
         key: ytabconfig-${{ inputs.ytabconfig_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v4
+      if: inputs.youquality == 'true'
       id: cache_youquality
       with:
         path: ${{ github.workspace }}/youquality.deb
         key: youquality-${{ inputs.youquality_commit }}-sdk${{ inputs.sdk_version }}
+
+    - uses: actions/cache@v4
+      id: cache_ytvo
+      with:
+        path: ${{ github.workspace }}/ytvo.deb
+        key: ytvo-${{ inputs.ytvo_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v4
       id: cache_youspeed
@@ -164,7 +202,7 @@ runs:
       with:
         path: ${{ github.workspace }}/youslider.deb
         key: youslider-${{ inputs.youslider_commit }}-sdk${{ inputs.sdk_version }}
-        
+
     - uses: actions/cache@v4
       id: cache_youchoose
       with:
