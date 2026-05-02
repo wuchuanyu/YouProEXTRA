@@ -2,17 +2,21 @@
 
 ### YouPro tweak provided by [@Alibusut](https://t.me/alibusut)
 
-### EDIT: force Sync fork before building
-### EDIT: YOU CAN NOW BUILD YTLite 5.2.1 with any YT version and optional tweaks.
+### EDIT: force Sync fork before building. Important!
+
+### EDIT: YOU CAN NOW BUILD YTLite 5.2.1/YTKillerPlus 5.0 with any YT version and optional tweaks.
 
 ## Main features
 - [YouPro](https://t.me/alibusut) - eg. Download Videos, No ads, Background Playback
+- [YTLite](https://github.com/dayanch96/YTLite) - YoutubePlus tweak
+- [YTKillerPlus](https://repo.ikghd.me/depictions/?p=me.ikghd.ytkplus) - YTKillerPlus tweak
 - [YTUHD](https://github.com/Tonwalter888/YTUHD) - Enables 4K streaming with 60pHDR capability 
 - [YouMute](https://github.com/PoomSmart/YouMute) - Mute the video sounds in video overlay
 - [YouSpeed](https://github.com/PoomSmart/YouSpeed) - Change video speeds in video overlay
 - [YTABConfig](https://github.com/PoomSmart/YTABConfig) - Configures A/B settings
 - [iSponsorBlock](https://github.com/Galactic-Dev/iSponsorBlock) - Block Sponsorship 
 - [YouChooseQuality](https://github.com/PoomSmart/YouChooseQuality) - Auto select the video quality from your scenario
+- [YouSlider](https://github.com/PoomSmart/YouSlider) - Customizes iOS YouTube video slider and scrubber. 
 - [YouShare](https://github.com/Tonwalter888/YouShare) - Copy video URL faster from video overlay
 - [Gonerino](https://github.com/castdrian/Gonerino) - Filter videos/channels/keywords that you don't want them to show up on your feeds
 - [YouGetCaption](https://github.com/PoomSmart/YouGetCaption) - Copy video captions from video overlay
@@ -58,6 +62,6 @@
 ## Supported YouTube version
 <ul>
    <li><strong>Latest confirmed:</strong> 21.17.3</li>
-   <li><strong>Date tested:</strong> May 1, 2026</li>
-   <li><strong>YouPro/YTLite:</strong> 0.3/5.2.1</li>
+   <li><strong>Date tested:</strong> May 2, 2026</li>
+   <li><strong>YouPro/YTLite/YTKP:</strong> 0.3/5.2.1/5.0</li>
 </ul>
