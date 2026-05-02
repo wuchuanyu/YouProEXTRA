@@ -1,4 +1,4 @@
-name: Build YouPro IPA with iSponsorBlock
+name: Build YouPro IPA
 
 on:
   workflow_dispatch:
