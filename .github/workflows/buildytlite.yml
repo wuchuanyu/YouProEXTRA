@@ -204,6 +204,7 @@ jobs:
           demc_commit: ${{ steps.commit_hashes.outputs.demc }}
           ytvid_commit: ${{ steps.commit_hashes.outputs.ytvid }}
           ythold_commit: ${{ steps.commit_hashes.outputs.ythold }}
+          youshare_commit: ${{ steps.commit_hashes.outputs.youshare }}
           volumeboost_commit: ${{ steps.commit_hashes.outputs.volumeboost }}
 
       - name: Build YTVideoOverlay
@@ -227,6 +228,13 @@ jobs:
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouPiP.git
           cd YouPiP && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youpip.deb
+
+      - name: Clone and Build YouShare
+        if: steps.cache_tweaks.outputs.cache_youshare_hit != 'true'
+        run: |
+          git clone --quiet --depth=1 https://github.com/Tonwalter888/YouShare.git
+          cd YouShare && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          mv packages/*.deb ${{ github.workspace }}/youshare.deb
 
       - name: Clone and Build YTUHD
         if: inputs.ytuhd == true && steps.cache_tweaks.outputs.cache_ytuhd_hit != 'true'
