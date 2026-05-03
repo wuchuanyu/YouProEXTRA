@@ -119,7 +119,7 @@ runs:
         echo "youloop=$(get_hash bhackel/YouLoop)"                                   >> $GITHUB_OUTPUT
         echo "alderis=$(get_hash hbang/Alderis)"                                     >> $GITHUB_OUTPUT
         echo "youslider=$(get_hash PoomSmart/YouSlider)"                             >> $GITHUB_OUTPUT
-        echo "youchoose=$(get_hash PoomSmart/YouChooseQuality)"                      >> $GITHUB_OUTPUT
+        echo "youchoose=$(get_hash Tonwalter888/YouChooseQuality)"                   >> $GITHUB_OUTPUT
         echo "ytsilentvote=$(get_hash PoomSmart/YTSilentVote)"                       >> $GITHUB_OUTPUT
         echo "youshare=$(get_hash Tonwalter888/YouShare)"                            >> $GITHUB_OUTPUT
         echo "gonerino=$(get_hash castdrian/Gonerino)"                               >> $GITHUB_OUTPUT
