@@ -13,9 +13,6 @@ inputs:
   ryd:
     required: false
     default: 'true'
-  ygs:
-    required: false
-    default: 'true'
   ytabconfig:
     required: false
     default: 'true'
@@ -157,7 +154,6 @@ runs:
         key: ryd-${{ inputs.ryd_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v4
-      if: inputs.ygs == 'true'
       id: cache_ygs
       with:
         path: ${{ github.workspace }}/ygs.deb

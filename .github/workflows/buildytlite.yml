@@ -38,12 +38,6 @@ on:
         required: false
         type: boolean
 
-      ygs:
-        description: "Integrate YouGroupSettings"
-        default: true
-        required: false
-        type: boolean
-
       ytabconfig:
         description: "Integrate YTABConfig"
         default: true
@@ -104,7 +98,7 @@ jobs:
       - name: Hide Sensitive Inputs
         uses: levibostian/action-hide-sensitive-inputs@v1
         with:
-          exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,ygs,ytabconfig,youquality,demc,ytvid,ythold,volumeboost
+          exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,ytabconfig,youquality,demc,ytvid,youchoose,ythold,volumeboost
 
       - name: Download and Validate IPA
         run: |
@@ -192,7 +186,6 @@ jobs:
           youpip: ${{ inputs.youpip }}
           ytuhd: ${{ inputs.ytuhd }}
           ryd: ${{ inputs.ryd }}
-          ygs: ${{ inputs.ygs }}
           ytabconfig: ${{ inputs.ytabconfig }}
           youquality: ${{ inputs.youquality }}
           demc: ${{ inputs.demc }}
@@ -251,7 +244,7 @@ jobs:
           mv packages/*.deb ${{ github.workspace }}/ryd.deb
 
       - name: Clone and Build YouGroupSettings
-        if: inputs.ygs == true && steps.cache_tweaks.outputs.cache_ygs_hit != 'true'
+        if: steps.cache_tweaks.outputs.cache_ygs_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/PoomSmart/YouGroupSettings.git
           cd YouGroupSettings && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
