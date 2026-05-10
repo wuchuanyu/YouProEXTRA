@@ -1,4 +1,4 @@
-name: Delete old draft releases test
+name: Delete old draft releases
 on:
   workflow_dispatch:
         inputs:
