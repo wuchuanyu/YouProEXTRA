@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OUTPUT_DIR="$SCRIPT_DIR/output"
+TIME_THRESHOLD=""
+DRY_RUN=false
+
+usage() {
+  cat <<'USAGE'
+Delete old local workflow output files.
+
+Usage:
+  local_workflows/delete-old-draft-releases [options]
+
+Options:
+  --time 30d        Delete files older than this threshold. Units: s,m,h,d,w,mo,y. Empty means all files.
+  --output-dir DIR  Output directory to clean (default: local_workflows/output)
+  --dry-run BOOL    Print matched paths without deleting (default: false)
+USAGE
+}
+
+bool_value() {
+  case "${1:-}" in
+    true|TRUE|1|yes|YES|y|Y) printf 'true' ;;
+    false|FALSE|0|no|NO|n|N) printf 'false' ;;
+    *) printf 'invalid boolean value: %s\n' "${1:-<empty>}" >&2; exit 1 ;;
+  esac
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --time) TIME_THRESHOLD="$2"; shift 2 ;;
+    --output-dir) OUTPUT_DIR="$2"; shift 2 ;;
+    --dry-run) DRY_RUN="$(bool_value "$2")"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'unknown option: %s\n' "$1" >&2; exit 1 ;;
+  esac
+done
+
+if [[ ! -d "$OUTPUT_DIR" ]]; then
+  echo "Nothing to clean: $OUTPUT_DIR does not exist"
+  exit 0
+fi
+
+now="$(date +%s)"
+threshold_seconds=0
+if [[ -n "$TIME_THRESHOLD" ]]; then
+  number="${TIME_THRESHOLD//[^0-9]/}"
+  unit="${TIME_THRESHOLD#$number}"
+  [[ -n "$number" ]] || { echo "invalid --time value: $TIME_THRESHOLD" >&2; exit 1; }
+  case "$unit" in
+    s|"") threshold_seconds="$number" ;;
+    m) threshold_seconds="$((number * 60))" ;;
+    h) threshold_seconds="$((number * 3600))" ;;
+    d) threshold_seconds="$((number * 86400))" ;;
+    w) threshold_seconds="$((number * 604800))" ;;
+    mo) threshold_seconds="$((number * 2592000))" ;;
+    y) threshold_seconds="$((number * 31536000))" ;;
+    *) echo "unsupported time unit: $unit" >&2; exit 1 ;;
+  esac
+fi
+
+while IFS=$'\t' read -r modified_seconds path; do
+  age="$((now - modified_seconds))"
+  if [[ "$threshold_seconds" -ne 0 && "$age" -lt "$threshold_seconds" ]]; then
+    continue
+  fi
+
+  if [[ "$DRY_RUN" = "true" ]]; then
+    echo "Would delete: $path"
+  else
+    echo "Deleting: $path"
+    rm -rf "$path"
+  fi
+done < <(
+  find "$OUTPUT_DIR" -mindepth 1 -maxdepth 1 -print0 |
+    xargs -0 stat -f '%m	%N' 2>/dev/null |
+    sort -rn
+)

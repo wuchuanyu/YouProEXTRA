@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORK_DIR="$SCRIPT_DIR/work"
+DAYS=0
+MINIMUM_RUNS=0
+DELETE_WORKFLOW_PATTERN=""
+DRY_RUN=false
+
+usage() {
+  cat <<'USAGE'
+Delete old local workflow work directories.
+
+Usage:
+  local_workflows/delete-old-workflows-run [options]
+
+Options:
+  --days N                         Delete work dirs older than N days (default: 0)
+  --minimum-runs N                 Keep the newest N matching work dirs (default: 0)
+  --delete-workflow-pattern TEXT   Only delete work dirs whose names contain TEXT
+  --work-dir DIR                   Work directory to clean (default: local_workflows/work)
+  --dry-run BOOL                   Print matched paths without deleting (default: false)
+
+Accepted for GitHub workflow input parity, but ignored locally:
+  --delete-workflow-by-state-pattern VALUE
+  --delete-run-by-conclusion-pattern VALUE
+  --check-branch-existence BOOL
+  --check-pullrequest-exist BOOL
+USAGE
+}
+
+bool_value() {
+  case "${1:-}" in
+    true|TRUE|1|yes|YES|y|Y) printf 'true' ;;
+    false|FALSE|0|no|NO|n|N) printf 'false' ;;
+    *) printf 'invalid boolean value: %s\n' "${1:-<empty>}" >&2; exit 1 ;;
+  esac
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --days) DAYS="$2"; shift 2 ;;
+    --minimum-runs) MINIMUM_RUNS="$2"; shift 2 ;;
+    --delete-workflow-pattern) DELETE_WORKFLOW_PATTERN="$2"; shift 2 ;;
+    --work-dir) WORK_DIR="$2"; shift 2 ;;
+    --dry-run) DRY_RUN="$(bool_value "$2")"; shift 2 ;;
+    --delete-workflow-by-state-pattern|--delete-run-by-conclusion-pattern|--check-branch-existence|--check-pullrequest-exist) shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf 'unknown option: %s\n' "$1" >&2; exit 1 ;;
+  esac
+done
+
+[[ "$DAYS" =~ ^[0-9]+$ ]] || { echo "--days must be a non-negative integer" >&2; exit 1; }
+[[ "$MINIMUM_RUNS" =~ ^[0-9]+$ ]] || { echo "--minimum-runs must be a non-negative integer" >&2; exit 1; }
+
+if [[ ! -d "$WORK_DIR" ]]; then
+  echo "Nothing to clean: $WORK_DIR does not exist"
+  exit 0
+fi
+
+cutoff_seconds="$(date -v-"${DAYS}"d +%s)"
+kept=0
+
+while IFS=$'\t' read -r modified_seconds path; do
+  name="$(basename "$path")"
+  if [[ -n "$DELETE_WORKFLOW_PATTERN" && "$name" != *"$DELETE_WORKFLOW_PATTERN"* ]]; then
+    continue
+  fi
+
+  kept="$((kept + 1))"
+  if [[ "$kept" -le "$MINIMUM_RUNS" ]]; then
+    continue
+  fi
+  if [[ "$modified_seconds" -gt "$cutoff_seconds" ]]; then
+    continue
+  fi
+
+  if [[ "$DRY_RUN" = "true" ]]; then
+    echo "Would delete: $path"
+  else
+    echo "Deleting: $path"
+    rm -rf "$path"
+  fi
+done < <(
+  find "$WORK_DIR" -mindepth 1 -maxdepth 1 -type d -print0 |
+    xargs -0 stat -f '%m	%N' 2>/dev/null |
+    sort -rn
+)

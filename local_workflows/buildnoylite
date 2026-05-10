@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
+
+IPA_URL=""
+IPA_PATH=""
+DISPLAY_NAME="YouTube"
+BUNDLE_ID="com.google.ios.youtube"
+DEMC=true
+ISPONSORBLOCK=true
+YTHOLD=false
+VOLUMEBOOST=false
+NATIVESHARE=false
+
+usage() {
+  cat <<'USAGE'
+Build IPA locally.
+
+Usage:
+  local_workflows/buildnoylite --ipa-url URL [options]
+  local_workflows/buildnoylite --ipa-path PATH [options]
+
+Options:
+  --demc BOOL
+  --isponsorblock BOOL
+  --ythold BOOL
+  --volumeboost BOOL
+  --nativeshare BOOL
+  -h, --help
+USAGE
+  print_global_usage
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --ipa-url) IPA_URL="$2"; shift 2 ;;
+    --ipa-path) IPA_PATH="$2"; shift 2 ;;
+    --display-name) DISPLAY_NAME="$2"; shift 2 ;;
+    --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
+    --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
+    --ytvid) shift 2 ;;
+    --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
+    --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
+    --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
+    --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
+    --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
+    --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
+    --theos-dir) LOCAL_THEOS_DIR="$2"; shift 2 ;;
+    --target) LOCAL_TARGET="$2"; shift 2 ;;
+    --warning-cflags) LOCAL_WARNING_CFLAGS="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) die "unknown option: $1" ;;
+  esac
+done
+
+run_dir="$(new_run_dir buildnoylite)"
+cd "$run_dir"
+
+resolve_ipa "$IPA_URL" "$IPA_PATH" youtube.ipa
+YT_VERSION="$(youtube_version_from_ipa youtube.ipa ytextracted)"
+[[ -n "$YT_VERSION" ]] || die "could not extract YouTube version"
+rm -rf ytextracted
+
+"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --output-dir "$run_dir/tweaks-output"
+cp -R "$run_dir/tweaks-output/built-debs/"* "$run_dir/"
+
+ensure_cyan
+tweaks="$(collect_tweaks_arg true)"
+output="YouProExtra_IPA_${YT_VERSION}.ipa"
+cyan -i youtube.ipa -o "$output" -uwsfg -f $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
+copy_output "$output"

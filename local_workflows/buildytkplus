@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
+
+IPA_URL=""
+IPA_PATH=""
+DISPLAY_NAME="YouTube"
+BUNDLE_ID="com.google.ios.youtube"
+YOUPIP=true
+YTUHD=true
+RYD=true
+YTABCONFIG=true
+YOUQUALITY=true
+DEMC=true
+YOUCHOOSE=false
+YTHOLD=false
+VOLUMEBOOST=false
+NATIVESHARE=false
+
+usage() {
+  cat <<'USAGE'
+Build YTKillerPlus IPA locally.
+
+Usage:
+  local_workflows/buildytkplus --ipa-url URL [options]
+  local_workflows/buildytkplus --ipa-path PATH [options]
+
+Options mirror buildytlite:
+  --youpip BOOL --ytuhd BOOL --ryd BOOL --ytabconfig BOOL --youquality BOOL
+  --demc BOOL --youchoose BOOL --ythold BOOL --volumeboost BOOL --nativeshare BOOL
+  -h, --help
+USAGE
+  print_global_usage
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --ipa-url) IPA_URL="$2"; shift 2 ;;
+    --ipa-path) IPA_PATH="$2"; shift 2 ;;
+    --display-name) DISPLAY_NAME="$2"; shift 2 ;;
+    --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
+    --youpip) YOUPIP="$(bool_value "$2")"; shift 2 ;;
+    --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
+    --ryd) RYD="$(bool_value "$2")"; shift 2 ;;
+    --ytabconfig) YTABCONFIG="$(bool_value "$2")"; shift 2 ;;
+    --youquality) YOUQUALITY="$(bool_value "$2")"; shift 2 ;;
+    --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
+    --ytvid) shift 2 ;;
+    --youchoose) YOUCHOOSE="$(bool_value "$2")"; shift 2 ;;
+    --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
+    --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
+    --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
+    --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
+    --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
+    --theos-dir) LOCAL_THEOS_DIR="$2"; shift 2 ;;
+    --target) LOCAL_TARGET="$2"; shift 2 ;;
+    --warning-cflags) LOCAL_WARNING_CFLAGS="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) die "unknown option: $1" ;;
+  esac
+done
+
+run_dir="$(new_run_dir buildytkplus)"
+cd "$run_dir"
+
+resolve_ipa "$IPA_URL" "$IPA_PATH" youtube.ipa
+YT_VERSION="$(youtube_version_from_ipa youtube.ipa ytextracted)"
+[[ -n "$YT_VERSION" ]] || die "could not extract YouTube version"
+rm -rf ytextracted
+
+ensure_homebrew_deps
+ensure_theos
+ensure_ios_sdk
+ensure_tbd
+ensure_cyan
+clone_sparse_appex "$run_dir"
+clone_headers
+
+build_make_deb https://github.com/PoomSmart/YTVideoOverlay.git YTVideoOverlay "$run_dir/ytvo.deb" THEOS_PACKAGE_SCHEME=rootless
+build_plain_deb https://github.com/mrdrvt99/YTKP.git YTKP "$run_dir/ytkplus.deb"
+YTKP_VERSION="$(grep '^Version:' YTKP/DEBIAN/control | awk '{print $2}')"
+
+[[ "$YOUPIP" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouPiP.git YouPiP "$run_dir/youpip.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTUHD" = "true" ]] && build_make_deb https://github.com/Tonwalter888/YTUHD.git YTUHD "$run_dir/ytuhd.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$RYD" = "true" ]] && build_make_deb https://github.com/PoomSmart/Return-YouTube-Dislikes.git Return-YouTube-Dislikes "$run_dir/ryd.deb" THEOS_PACKAGE_SCHEME=rootless
+build_make_deb https://github.com/PoomSmart/YouGroupSettings.git YouGroupSettings "$run_dir/ygs.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTABCONFIG" = "true" ]] && build_make_deb https://github.com/PoomSmart/YTABConfig.git YTABConfig "$run_dir/ytabconfig.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUQUALITY" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouQuality.git YouQuality "$run_dir/youquality.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUCHOOSE" = "true" ]] && build_make_deb https://github.com/Tonwalter888/YouChooseQuality.git YouChooseQuality "$run_dir/youchoose.deb" THEOS_PACKAGE_SCHEME=rootless
+build_make_deb https://github.com/Tonwalter888/YouShare.git YouShare "$run_dir/youshare.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$DEMC" = "true" ]] && build_make_deb https://github.com/therealFoxster/DontEatMyContent.git DontEatMyContent "$run_dir/demc.deb" THEOS_PACKAGE_SCHEME=rootless
+build_make_deb https://github.com/PoomSmart/YTVideoErrorAlert.git YTVideoErrorAlert "$run_dir/ytvideoerror.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTHOLD" = "true" ]] && build_make_deb https://github.com/joshuaseltzer/YTHoldForSpeed.git YTHoldForSpeed "$run_dir/ythold.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
+[[ "$VOLUMEBOOST" = "true" ]] && build_make_deb https://github.com/VasirakCalgux/VolumeBoostYT.git VolumeBoostYT "$run_dir/volumeboost.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
+[[ "$NATIVESHARE" = "true" ]] && build_native_share_deb "$run_dir/nativeshare.deb"
+
+tweaks="$(collect_tweaks_arg true)"
+output="YTKillerPlus_${YT_VERSION}_${YTKP_VERSION}.ipa"
+cyan -i youtube.ipa -o "$output" -uwsfg -f $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
+
+unzip -q "$output" -d ipa_final
+rm -rf ipa_final/Payload/YouTube.app/Frameworks/CydiaSubstrate.framework
+cp -rf YTKP/releases/CydiaSubstrate.framework ipa_final/Payload/YouTube.app/Frameworks/
+ldid -S "ipa_final/Payload/YouTube.app/Frameworks/CydiaSubstrate.framework/CydiaSubstrate"
+(
+  cd ipa_final
+  zip -qr "../$output" Payload
+)
+rm -rf ipa_final
+copy_output "$output"

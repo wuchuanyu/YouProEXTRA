@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
+
+IPA_URL=""
+IPA_PATH=""
+DEB_URL=""
+DEB_PATH=""
+DISPLAY_NAME="YouTube"
+BUNDLE_ID="com.google.ios.youtube"
+DEMC=true
+ISPONSORBLOCK=true
+YTHOLD=false
+VOLUMEBOOST=false
+NATIVESHARE=false
+
+usage() {
+  cat <<'USAGE'
+Build IPA with a custom tweak locally.
+
+Usage:
+  local_workflows/buildcustom --ipa-url URL --deb-url URL [options]
+  local_workflows/buildcustom --ipa-path PATH --deb-path PATH [options]
+
+Options:
+  --deb-url URL
+  --deb-path PATH
+  --demc BOOL
+  --isponsorblock BOOL
+  --ythold BOOL
+  --volumeboost BOOL
+  --nativeshare BOOL
+  -h, --help
+USAGE
+  print_global_usage
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --ipa-url) IPA_URL="$2"; shift 2 ;;
+    --ipa-path) IPA_PATH="$2"; shift 2 ;;
+    --deb-url) DEB_URL="$2"; shift 2 ;;
+    --deb-path) DEB_PATH="$2"; shift 2 ;;
+    --display-name) DISPLAY_NAME="$2"; shift 2 ;;
+    --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
+    --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
+    --ytvid) shift 2 ;;
+    --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
+    --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
+    --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
+    --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
+    --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
+    --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
+    --theos-dir) LOCAL_THEOS_DIR="$2"; shift 2 ;;
+    --target) LOCAL_TARGET="$2"; shift 2 ;;
+    --warning-cflags) LOCAL_WARNING_CFLAGS="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) die "unknown option: $1" ;;
+  esac
+done
+
+run_dir="$(new_run_dir buildcustom)"
+cd "$run_dir"
+
+resolve_ipa "$IPA_URL" "$IPA_PATH" youtube.ipa
+YT_VERSION="$(youtube_version_from_ipa youtube.ipa ytextracted)"
+[[ -n "$YT_VERSION" ]] || die "could not extract YouTube version"
+rm -rf ytextracted
+
+if [[ -n "$DEB_URL" && -n "$DEB_PATH" ]]; then
+  die "use only one of --deb-url or --deb-path"
+fi
+if [[ -z "$DEB_URL" && -z "$DEB_PATH" ]]; then
+  die "missing custom deb; pass --deb-url URL or --deb-path PATH"
+fi
+if [[ -n "$DEB_URL" ]]; then
+  deb_name="$(basename "$DEB_URL" | cut -d'?' -f1)"
+  [[ "$deb_name" == *.deb ]] || deb_name="${deb_name}.deb"
+  download_url "$DEB_URL" "$deb_name"
+else
+  [[ -f "$DEB_PATH" ]] || die "deb path does not exist: $DEB_PATH"
+  deb_name="$(basename "$DEB_PATH")"
+  [[ "$deb_name" == *.deb ]] || deb_name="${deb_name}.deb"
+  cp "$DEB_PATH" "$deb_name"
+fi
+validate_deb "$deb_name"
+CUSTOM_DEB_VERSION="$(deb_version "$deb_name" "$run_dir/custom-deb-control")"
+[[ -n "$CUSTOM_DEB_VERSION" ]] || die "could not extract custom deb version"
+
+"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --output-dir "$run_dir/tweaks-output"
+cp -R "$run_dir/tweaks-output/built-debs/"* "$run_dir/"
+
+ensure_cyan
+tweaks="$(collect_tweaks_arg true)"
+output="YouProExtra_${YT_VERSION}_v${CUSTOM_DEB_VERSION}.ipa"
+cyan -i youtube.ipa -o "$output" -uwsfg -f $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
+copy_output "$output"
