@@ -20,7 +20,13 @@ on:
         default: "com.google.ios.youtube"
         required: true
         type: string
-
+        
+      opensafari:
+        description: "Integrate Open in YouTube (Safari Extension)"
+        default: true
+        required: false
+        type: boolean
+        
       demc:
         description: "Integrate DontEatMyContent"
         default: true
@@ -33,17 +39,17 @@ on:
         required: false
         type: boolean
         
-      ythold:
-        description: "Integrate YTHoldForSpeed"
-        default: false
-        required: false
-        type: boolean
+#      ythold:
+#        description: "Integrate YTHoldForSpeed"
+#        default: false
+#        required: false
+#        type: boolean
         
-      nativeshare:
-        description: "Integrate YTNativeShare"
-        default: false
-        required: false
-        type: boolean
+#      nativeshare:
+#        description: "Integrate YTNativeShare"
+#        default: false
+#        required: false
+#        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -56,8 +62,9 @@ jobs:
       youpro: true
       isponsorblock: ${{ inputs.isponsorblock }}
       demc: ${{ inputs.demc }}
-      ythold: ${{ inputs.ythold }}
-      nativeshare: ${{ inputs.nativeshare }}
+#      ythold: ${{ inputs.ythold }}
+#      nativeshare: ${{ inputs.nativeshare }}
+      opensafari: ${{ inputs.opensafari }}
       
   package:
     name: Build YouPro IPA
@@ -68,15 +75,15 @@ jobs:
 
     steps:
       - name: Download Built Debs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: built-debs
           path: ${{ github.workspace }}
 
       - name: Hide Sensitive Inputs
-        uses: levibostian/action-hide-sensitive-inputs@v1
+        uses: levibostian/action-hide-sensitive-inputs@1.2.0
         with:
-          exclude_inputs: bundle_id,display_name,demc,isponsorblock,ythold,nativeshare
+          exclude_inputs: bundle_id,display_name,demc,isponsorblock,opensafari
 
       - name: Download and Validate IPA
         run: |
@@ -103,8 +110,16 @@ jobs:
             tar -xJf control.tar.xz ./control
           elif [ -f control.tar.zst ]; then
             tar --zstd -xf control.tar.zst ./control
+          else
+            echo "::error::Could not find control tarball in YouPro.deb"
+            exit 1
           fi
-          echo "YOUPRO_VERSION=$(grep '^Version:' control | awk '{print $2}' | tr -d '\r')" >> $GITHUB_ENV
+          VERSION=$(grep '^Version:' control | awk '{print $2}' | tr -d '\r')
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not extract version from YouPro.deb control file"
+            exit 1
+          fi
+          echo "YOUPRO_VERSION=$VERSION" >> $GITHUB_ENV
           cd .. && rm -rf _youpro_extract
 
       - name: Install cyan
@@ -113,19 +128,28 @@ jobs:
 
       - name: Inject Tweaks Into IPA
         run: |
-          tweaks="OpenYouTubeSafariExtension.appex"
+          tweaks=""
+          if [ "${{ inputs.opensafari }}" = "true" ] && [ -e "OpenYouTubeSafariExtension.appex" ]; then
+            tweaks="OpenYouTubeSafariExtension.appex"
+          fi
           for f in *.deb; do
             [ -f "$f" ] && tweaks="$tweaks $f"
           done
-          cyan -i youtube.ipa -o YouProExtra_${{ env.YT_VERSION }}_${{ env.YOUPRO_VERSION }}.ipa -uwsfg -f $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
-
+          cyan -i youtube.ipa -o YouProExtra_${{ env.YT_VERSION }}_${{ env.YOUPRO_VERSION }}.ipa -uwesf $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
+          
       - name: Create a Draft Release
-        uses: softprops/action-gh-release@v2.6.2
-        with:
-          tag_name: youproextra-ipa${{ github.run_number }}
-          name: YouProExtra_${{ env.YT_VERSION }}_${{ env.YOUPRO_VERSION }} (${{ github.run_number }})
-          files: YouProExtra_${{ env.YT_VERSION }}_${{ env.YOUPRO_VERSION }}.ipa
-          draft: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          i=1
+          while gh release view "youproextra-ipa${i}" --repo "$GITHUB_REPOSITORY" &>/dev/null; do
+            i=$(( i + 1 ))
+          done
+          gh release create "youproextra-ipa${i}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "YouProExtra_${{ env.YT_VERSION }}_${{ env.YOUPRO_VERSION }}" \
+            --draft \
+            YouProExtra_${{ env.YT_VERSION }}_${{ env.YOUPRO_VERSION }}.ipa
 
       - name: Job Summary - Build Complete
         run: echo -e '### 🛠️ Build YouPro IPA Complete!' >> $GITHUB_STEP_SUMMARY

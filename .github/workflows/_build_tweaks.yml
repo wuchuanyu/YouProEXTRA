@@ -22,11 +22,15 @@ on:
       volumeboost:
         type: boolean
         required: false
-        default: false  
+        default: false 
       nativeshare:
         type: boolean
         required: false
         default: false
+      opensafari:
+        type: boolean
+        required: false
+        default: true
 
 jobs:
   build-tweaks:
@@ -35,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Install Dependencies
         run: brew install make ldid swiftlint dpkg
@@ -76,6 +80,7 @@ jobs:
           chmod +x /usr/local/bin/tbd
 
       - name: Clone Open in YouTube (Safari Extension)
+        if: inputs.opensafari == true
         run: |
           git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/BillyCurtis/OpenYouTubeSafariExtension.git
           cd OpenYouTubeSafariExtension
@@ -85,18 +90,17 @@ jobs:
 
       - name: Clone YouTubeHeader
         run: |
-          if [ ! -d "$THEOS/include/YouTubeHeader" ]; then
-            git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git $THEOS/include/YouTubeHeader
-          fi
-          if [ "${{ inputs.demc }}" = "true" ] && [ ! -d "$THEOS/include/YTHeaders" ]; then
+          rm -rf $THEOS/include/YouTubeHeader
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git $THEOS/include/YouTubeHeader
+          if [ "${{ inputs.demc }}" = "true" ]; then
+            rm -rf $THEOS/include/YTHeaders
             cp -r "$THEOS/include/YouTubeHeader" "$THEOS/include/YTHeaders"
           fi
 
       - name: Clone PSHeader
         run: |
-          if [ ! -d "$THEOS/include/PSHeader" ]; then
-            git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
-          fi
+          rm -rf $THEOS/include/PSHeader
+          git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
 
       - name: Clone YTVideoOverlay
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
@@ -126,7 +130,6 @@ jobs:
           youslider_commit: ${{ steps.commit_hashes.outputs.youslider }}
           youchoose_commit: ${{ steps.commit_hashes.outputs.youchoose }}
           ytsilentvote_commit: ${{ steps.commit_hashes.outputs.ytsilentvote }}
-          youshare_commit: ${{ steps.commit_hashes.outputs.youshare }}
           gonerino_commit: ${{ steps.commit_hashes.outputs.gonerino }}
           ytweaks_commit: ${{ steps.commit_hashes.outputs.ytweaks }}
           yougetcaption_commit: ${{ steps.commit_hashes.outputs.yougetcaption }}
@@ -243,13 +246,6 @@ jobs:
           cd YTSilentVote && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/ytnovote.deb
 
-      - name: Clone and Build YouShare
-        if: steps.cache_tweaks.outputs.cache_youshare_hit != 'true'
-        run: |
-          git clone --quiet --depth=1 https://github.com/Tonwalter888/YouShare.git
-          cd YouShare && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/youshare.deb
-
       - name: Clone and Build Gonerino
         if: steps.cache_tweaks.outputs.cache_gonerino_hit != 'true'
         run: |
@@ -289,7 +285,7 @@ jobs:
         if: inputs.isponsorblock == true && steps.cache_tweaks.outputs.cache_isponsorblock_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/Galactic-Dev/iSponsorBlock.git
-          cd iSponsorBlock && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
+          cd iSponsorBlock && make clean package DEBUG=0 FINALPACKAGE=1 ROOTLESS=1 ARCHS=arm64 TARGET=iphone:clang:18.6:13.0
           mv packages/*.deb ${{ github.workspace }}/isponsorblock.deb
 
       - name: Clone and Build YTVideoErrorAlert
@@ -303,7 +299,7 @@ jobs:
         if: inputs.ythold == true && steps.cache_tweaks.outputs.cache_ythold_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/joshuaseltzer/YTHoldForSpeed.git
-          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0 
+          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
           mv packages/*.deb ${{ github.workspace }}/ythold.deb
 
       - name: Clone and Build VolumeBoostYT
@@ -323,7 +319,7 @@ jobs:
           mv packages/*.deb ${{ github.workspace }}/nativeshare.deb
 
       - name: Upload Built Debs as Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: built-debs
           path: |

@@ -16,6 +16,9 @@ YouTube IPA builder packed with customizable tweaks. Also Known as Youtubemaxxin
 - **[YouPro](https://t.me/alibusut)** - Basic Youtube Premium features; Download Videos, No ads, Background Playback.
 - **[YoutubePlus/YTLite](https://github.com/dayanch96/YTLite)** - A flexible enhancer for YouTube on iOS, featuring over hundred customizable options.
 - **[YTKillerPlus](https://repo.ikghd.me/depictions/?p=me.ikghd.ytkplus)** - Alternative Youtube tweak with more custiomized options.
+- **[YouMod](https://github.com/Tonwalter888/YouMod)** - a free alternative youtube tweak.
+- **[LRD](https://t.me/LRD_Update)/[DLTube](https://x.com/dltweaks_)** - more optional YouTube tweaks. Download Videos, No ads and Background Playback.
+- **[YTMusicUltimate](https://github.com/mrdrvt99/YTMusicUltimate)** - Background playback, ad removal, and other small improvements. Downloads are currently broken.
 - [YouPip](https://github.com/PoomSmart/YouPiP) -  Enables native PiP in iOS YouTube app.
 - [YTUHD](https://github.com/Tonwalter888/YTUHD) - Unlocks 1440p and 2160p resolutions in iOS YouTube app.
 - [ReturnYoutubeDislikes](https://github.com/PoomSmart/Return-YouTube-Dislikes) -  Brings Back Dislikes On YouTube iOS. 
@@ -27,7 +30,6 @@ YouTube IPA builder packed with customizable tweaks. Also Known as Youtubemaxxin
 - [YouChooseQuality](https://github.com/PoomSmart/YouChooseQuality) - Auto-selects the video quality of choice in iOS YouTube app.
 - [YouSlider](https://github.com/PoomSmart/YouSlider) - Customizes iOS YouTube video slider and scrubber.
 - [YTSilentVote](https://github.com/PoomSmart/YTSilentVote.git) - No messages will pop up as you like/dislike videos.
-- [YouShare](https://github.com/Tonwalter888/YouShare) - Allowing you to Share Videos faster in iOS YouTube app.
 - [YouGetCaption](https://github.com/PoomSmart/YouGetCaption) - Views and copies caption from YouTube videos.
 - [YTweaks](https://github.com/fosterbarnes/YTweaks) - Various tweaks for the iOS YouTube app. 
 - [Gonerino](https://github.com/castdrian/Gonerino) - Filter videos/channels/keywords that you don't want them to show up on your feeds
@@ -76,7 +78,7 @@ YouTube IPA builder packed with customizable tweaks. Also Known as Youtubemaxxin
 
 ## Supported YouTube version
 <ul>
-   <li><strong>Latest confirmed:</strong> 21.18.4</li>
-   <li><strong>Date tested:</strong> May 4, 2026</li>
-   <li><strong>YouPro/YTLite/YTKP:</strong> 0.3/5.2.1/5.3</li>
+   <li><strong>Latest confirmed:</strong> 21.20.4</li>
+   <li><strong>Date tested:</strong> May 20, 2026</li>
+   <li><strong>YouPro/YTLite/YTKP:</strong> 0.3/5.2.1/5.3.2</li>
 </ul>

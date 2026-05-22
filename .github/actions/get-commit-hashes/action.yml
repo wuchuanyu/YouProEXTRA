@@ -65,9 +65,6 @@ outputs:
   ytsilentvote:
     description: YTSilentVote commit hash
     value: ${{ steps.hashes.outputs.ytsilentvote }}
-  youshare:
-    description: YouShare commit hash
-    value: ${{ steps.hashes.outputs.youshare }}
   gonerino:
     description: Gonerino commit hash
     value: ${{ steps.hashes.outputs.gonerino }}
@@ -96,7 +93,7 @@ outputs:
     description: VolumeBoostYT commit hash
     value: ${{ steps.hashes.outputs.volumeboost }}
   nativeshare:
-    description: youtube-native-share commit hash
+    description: YTNativeShare commit hash
     value: ${{ steps.hashes.outputs.nativeshare }}
  
 runs:
@@ -125,7 +122,6 @@ runs:
         echo "youslider=$(get_hash PoomSmart/YouSlider)"                             >> $GITHUB_OUTPUT
         echo "youchoose=$(get_hash Tonwalter888/YouChooseQuality)"                   >> $GITHUB_OUTPUT
         echo "ytsilentvote=$(get_hash PoomSmart/YTSilentVote)"                       >> $GITHUB_OUTPUT
-        echo "youshare=$(get_hash Tonwalter888/YouShare)"                            >> $GITHUB_OUTPUT
         echo "gonerino=$(get_hash castdrian/Gonerino)"                               >> $GITHUB_OUTPUT
         echo "ytweaks=$(get_hash fosterbarnes/YTweaks)"                              >> $GITHUB_OUTPUT
         echo "yougetcaption=$(get_hash PoomSmart/YouGetCaption)"                     >> $GITHUB_OUTPUT

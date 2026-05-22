@@ -27,6 +27,18 @@ on:
         required: true
         type: string
 
+      custom_name:
+        description: "Custom name for the output IPA file"
+        default: "YouProExtra"
+        required: true
+        type: string
+
+      opensafari:
+        description: "Integrate Open in YouTube (Safari Extension)"
+        default: true
+        required: false
+        type: boolean
+        
       demc:
         description: "Integrate DontEatMyContent"
         default: true
@@ -71,6 +83,7 @@ jobs:
       volumeboost: ${{ inputs.volumeboost }}
       nativeshare: ${{ inputs.nativeshare }}
       youpro: false
+      opensafari: ${{ inputs.opensafari }}
 
   package:
     name: Build IPA with Custom tweak
@@ -81,15 +94,15 @@ jobs:
 
     steps:
       - name: Download Built Debs
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: built-debs
           path: ${{ github.workspace }}
 
       - name: Hide Sensitive Inputs
-        uses: levibostian/action-hide-sensitive-inputs@v1
+        uses: levibostian/action-hide-sensitive-inputs@1.2.0
         with:
-          exclude_inputs: bundle_id,display_name,demc,isponsorblock,ythold,volumeboost,nativeshare
+          exclude_inputs: bundle_id,display_name,custom_name,demc,isponsorblock,ythold,volumeboost,nativeshare,opensafari
 
       - name: Download and Validate IPA
         run: |
@@ -145,21 +158,35 @@ jobs:
         run: |
           pipx install --force https://github.com/asdfzxcvbn/pyzule-rw/archive/main.zip
 
+      - name: Sanitize Custom Name
+        run: |
+          SANITIZED_NAME=$(echo "${{ inputs.custom_name }}" | tr ' ' '_' | tr -cd '[:alnum:]_.-')
+          echo "SANITIZED_NAME=$SANITIZED_NAME" >> $GITHUB_ENV
+
       - name: Inject Tweaks Into IPA
         run: |
-          tweaks="OpenYouTubeSafariExtension.appex"
+          tweaks=""
+          if [ "${{ inputs.opensafari }}" = "true" ] && [ -e "OpenYouTubeSafariExtension.appex" ]; then
+            tweaks="OpenYouTubeSafariExtension.appex"
+          fi
           for f in *.deb; do
             [ -f "$f" ] && tweaks="$tweaks $f"
           done
-          cyan -i youtube.ipa -o YouProExtra_${{ env.YT_VERSION }}_v${{ env.CUSTOM_DEB_VERSION }}.ipa -uwsfg -f $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
-
+          cyan -i youtube.ipa -o "${{ env.SANITIZED_NAME }}_${{ env.YT_VERSION }}_${{ env.CUSTOM_DEB_VERSION }}.ipa" -uwesf $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
+          
       - name: Create a Draft Release
-        uses: softprops/action-gh-release@v2.6.2
-        with:
-          tag_name: youproextra-customdeb-ipa${{ github.run_number }}
-          name: YouProExtra_${{ env.YT_VERSION }}_v${{ env.CUSTOM_DEB_VERSION }} (${{ github.run_number }})
-          files: YouProExtra_${{ env.YT_VERSION }}_v${{ env.CUSTOM_DEB_VERSION }}.ipa
-          draft: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          i=1
+          while gh release view "youproextra-customdeb-ipa${i}" --repo "$GITHUB_REPOSITORY" &>/dev/null; do
+            i=$(( i + 1 ))
+          done
+          gh release create "youproextra-customdeb-ipa${i}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "${{ env.SANITIZED_NAME }}_${{ env.YT_VERSION }}_${{ env.CUSTOM_DEB_VERSION }}" \
+            --draft \
+            "${{ env.SANITIZED_NAME }}_${{ env.YT_VERSION }}_${{ env.CUSTOM_DEB_VERSION }}.ipa"
 
       - name: Job Summary - Build Complete
         run: echo -e '### 🛠️ Build IPA with Custom tweak Complete!' >> $GITHUB_STEP_SUMMARY

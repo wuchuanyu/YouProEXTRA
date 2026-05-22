@@ -19,6 +19,12 @@ on:
         default: "com.google.ios.youtube"
         required: true
         type: string
+        
+      opensafari:
+        description: "Integrate Open in YouTube (Safari Extension)"
+        default: true
+        required: false
+        type: boolean
 
       demc:
         description: "Integrate DontEatMyContent"
@@ -62,6 +68,18 @@ on:
         required: false
         type: boolean
         
+      gonerino:
+        description: "Integrate Gonerino"
+        default: false
+        required: false
+        type: boolean
+
+      yougetcaption:
+        description: "Integrate YouGetCaption"
+        default: false
+        required: false
+        type: boolean
+        
       ythold:
         description: "Integrate YTHoldForSpeed"
         default: false
@@ -93,12 +111,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Hide Sensitive Inputs
-        uses: levibostian/action-hide-sensitive-inputs@v1
+        uses: levibostian/action-hide-sensitive-inputs@1.2.0
         with:
-          exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,ytabconfig,youquality,demc,youchoose,ythold,volumeboost,nativeshare
+          exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,ytabconfig,youquality,gonerino,yougetcaption,demc,youchoose,ythold,volumeboost,nativeshare,opensafari
 
       - name: Download and Validate IPA
         run: |
@@ -123,7 +141,7 @@ jobs:
           ythold: ${{ inputs.ythold }}
           volumeboost: ${{ inputs.volumeboost }}
           nativeshare: ${{ inputs.nativeshare }}
-
+          
       - name: Install Dependencies
         run: brew install make ldid swiftlint dpkg
 
@@ -154,6 +172,7 @@ jobs:
           chmod +x /usr/local/bin/tbd
 
       - name: Clone Open in YouTube (Safari Extension)
+        if: inputs.opensafari == true  
         run: |
           git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/BillyCurtis/OpenYouTubeSafariExtension.git
           cd OpenYouTubeSafariExtension
@@ -163,18 +182,17 @@ jobs:
 
       - name: Clone YouTubeHeader
         run: |
-          if [ ! -d "$THEOS/include/YouTubeHeader" ]; then
-            git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git $THEOS/include/YouTubeHeader
-          fi
-          if [ "${{ inputs.demc }}" = "true" ] && [ ! -d "$THEOS/include/YTHeaders" ]; then
+          rm -rf $THEOS/include/YouTubeHeader
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git $THEOS/include/YouTubeHeader
+          if [ "${{ inputs.demc }}" = "true" ]; then
+            rm -rf $THEOS/include/YTHeaders
             cp -r "$THEOS/include/YouTubeHeader" "$THEOS/include/YTHeaders"
           fi
 
       - name: Clone PSHeader
         run: |
-          if [ ! -d "$THEOS/include/PSHeader" ]; then
-            git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
-          fi
+          rm -rf $THEOS/include/PSHeader
+          git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
 
       - name: Clone YTVideoOverlay
         run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
@@ -189,6 +207,9 @@ jobs:
           ryd: ${{ inputs.ryd }}
           ytabconfig: ${{ inputs.ytabconfig }}
           youquality: ${{ inputs.youquality }}
+          youchoose: ${{ inputs.youchoose }}
+          gonerino: ${{ inputs.gonerino }}
+          yougetcaption: ${{ inputs.yougetcaption }}
           demc: ${{ inputs.demc }}
           ythold: ${{ inputs.ythold }}
           volumeboost: ${{ inputs.volumeboost }}
@@ -200,7 +221,8 @@ jobs:
           ygs_commit: ${{ steps.commit_hashes.outputs.ygs }}
           ytvo_commit: ${{ steps.commit_hashes.outputs.ytvo }}
           youchoose_commit: ${{ steps.commit_hashes.outputs.youchoose }}
-          youshare_commit: ${{ steps.commit_hashes.outputs.youshare }}
+          gonerino_commit: ${{ steps.commit_hashes.outputs.gonerino }}
+          yougetcaption_commit: ${{ steps.commit_hashes.outputs.yougetcaption }}
           ytabconfig_commit: ${{ steps.commit_hashes.outputs.ytabconfig }}
           youquality_commit: ${{ steps.commit_hashes.outputs.youquality }}
           demc_commit: ${{ steps.commit_hashes.outputs.demc }}
@@ -272,13 +294,20 @@ jobs:
           cd YouChooseQuality && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youchoose.deb
 
-      - name: Clone and Build YouShare
-        if: steps.cache_tweaks.outputs.cache_youshare_hit != 'true'
+      - name: Clone and Build Gonerino
+        if: inputs.gonerino == true && steps.cache_tweaks.outputs.cache_gonerino_hit != 'true'
         run: |
-          git clone --quiet --depth=1 https://github.com/Tonwalter888/YouShare.git
-          cd YouShare && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/youshare.deb
+          git clone --quiet --depth=1 https://github.com/castdrian/Gonerino.git
+          cd Gonerino && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          mv packages/*.deb ${{ github.workspace }}/gonerino.deb
 
+      - name: Clone and Build YouGetCaption
+        if: inputs.yougetcaption == true && steps.cache_tweaks.outputs.cache_yougetcaption_hit != 'true'
+        run: |
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouGetCaption.git
+          cd YouGetCaption && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          mv packages/*.deb ${{ github.workspace }}/ygc.deb
+          
       - name: Clone and Build DontEatMyContent
         if: inputs.demc == true && steps.cache_tweaks.outputs.cache_demc_hit != 'true'
         run: |
@@ -297,7 +326,7 @@ jobs:
         if: inputs.ythold == true && steps.cache_tweaks.outputs.cache_ythold_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/joshuaseltzer/YTHoldForSpeed.git
-          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0 
+          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
           mv packages/*.deb ${{ github.workspace }}/ythold.deb
 
       - name: Clone and Build VolumeBoostYT
@@ -318,26 +347,28 @@ jobs:
 
       - name: Inject Tweaks Into IPA
         run: |
-          tweaks="OpenYouTubeSafariExtension.appex"
+          tweaks=""
+          if [ "${{ inputs.opensafari }}" = "true" ] && [ -e "OpenYouTubeSafariExtension.appex" ]; then
+            tweaks="OpenYouTubeSafariExtension.appex"
+          fi
           for f in *.deb; do
             [ -f "$f" ] && tweaks="$tweaks $f"
           done
-          cyan -i youtube.ipa -o YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }}.ipa -uwsfg -f $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
-
-          unzip -q YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }}.ipa -d ipa_final
-          rm -rf ipa_final/Payload/YouTube.app/Frameworks/CydiaSubstrate.framework
-          cp -rf YTKP/releases/CydiaSubstrate.framework ipa_final/Payload/YouTube.app/Frameworks/
-          ldid -S "ipa_final/Payload/YouTube.app/Frameworks/CydiaSubstrate.framework/CydiaSubstrate"
-          cd ipa_final && zip -qr ../YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }}.ipa Payload
-          cd .. && rm -rf ipa_final
-          
+          cyan -i youtube.ipa -o YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }}.ipa -uwesf $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
+                    
       - name: Create a Draft Release
-        uses: softprops/action-gh-release@v2.6.2
-        with:
-          tag_name: ytkp-ipa${{ github.run_number }}
-          name: YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }} (${{ github.run_number }})
-          files: YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }}.ipa
-          draft: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          i=1
+          while gh release view "ytkp-ipa${i}" --repo "$GITHUB_REPOSITORY" &>/dev/null; do
+            i=$(( i + 1 ))
+          done
+          gh release create "ytkp-ipa${i}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }}" \
+            --draft \
+            YTKillerPlus_${{ env.YT_VERSION }}_${{ env.YTKP_VERSION }}.ipa
 
       - name: Job Summary - Build Complete
         run: echo -e '### 🛠️ Build YTKillerPlus IPA Complete!' >> $GITHUB_STEP_SUMMARY
