@@ -9,11 +9,13 @@ DEB_URL=""
 DEB_PATH=""
 DISPLAY_NAME="YouTube"
 BUNDLE_ID="com.google.ios.youtube"
+CUSTOM_NAME="YouProExtra"
 DEMC=true
 ISPONSORBLOCK=true
 YTHOLD=false
 VOLUMEBOOST=false
 NATIVESHARE=false
+OPENSAFARI=true
 
 usage() {
   cat <<'USAGE'
@@ -26,11 +28,13 @@ Usage:
 Options:
   --deb-url URL
   --deb-path PATH
+  --custom-name NAME       Name prefix for the output IPA (default: YouProExtra)
   --demc BOOL
   --isponsorblock BOOL
   --ythold BOOL
   --volumeboost BOOL
   --nativeshare BOOL
+  --opensafari BOOL
   -h, --help
 USAGE
   print_global_usage
@@ -44,12 +48,14 @@ while [[ $# -gt 0 ]]; do
     --deb-path) DEB_PATH="$2"; shift 2 ;;
     --display-name) DISPLAY_NAME="$2"; shift 2 ;;
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
+    --custom-name) CUSTOM_NAME="$2"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
     --ytvid) shift 2 ;;
     --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
+    --opensafari) OPENSAFARI="$(bool_value "$2")"; shift 2 ;;
     --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
     --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
     --theos-dir) LOCAL_THEOS_DIR="$2"; shift 2 ;;
@@ -88,11 +94,13 @@ validate_deb "$deb_name"
 CUSTOM_DEB_VERSION="$(deb_version "$deb_name" "$run_dir/custom-deb-control")"
 [[ -n "$CUSTOM_DEB_VERSION" ]] || die "could not extract custom deb version"
 
-"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --output-dir "$run_dir/tweaks-output"
+"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
 cp -R "$run_dir/tweaks-output/built-debs/"* "$run_dir/"
 
 ensure_cyan
-tweaks="$(collect_tweaks_arg true)"
-output="YouProExtra_${YT_VERSION}_v${CUSTOM_DEB_VERSION}.ipa"
-cyan -i youtube.ipa -o "$output" -uwsfg -f $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
+sanitized="$(sanitize_name "$CUSTOM_NAME")"
+[[ -n "$sanitized" ]] || die "custom name resolves to empty after sanitization: $CUSTOM_NAME"
+tweaks="$(collect_tweaks_arg "$OPENSAFARI")"
+output="${sanitized}_${YT_VERSION}_${CUSTOM_DEB_VERSION}.ipa"
+cyan -i youtube.ipa -o "$output" -uwesf $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
 copy_output "$output"

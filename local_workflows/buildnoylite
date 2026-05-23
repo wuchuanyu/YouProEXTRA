@@ -12,6 +12,7 @@ ISPONSORBLOCK=true
 YTHOLD=false
 VOLUMEBOOST=false
 NATIVESHARE=false
+OPENSAFARI=true
 
 usage() {
   cat <<'USAGE'
@@ -27,6 +28,7 @@ Options:
   --ythold BOOL
   --volumeboost BOOL
   --nativeshare BOOL
+  --opensafari BOOL
   -h, --help
 USAGE
   print_global_usage
@@ -44,6 +46,7 @@ while [[ $# -gt 0 ]]; do
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
+    --opensafari) OPENSAFARI="$(bool_value "$2")"; shift 2 ;;
     --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
     --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
     --theos-dir) LOCAL_THEOS_DIR="$2"; shift 2 ;;
@@ -62,11 +65,11 @@ YT_VERSION="$(youtube_version_from_ipa youtube.ipa ytextracted)"
 [[ -n "$YT_VERSION" ]] || die "could not extract YouTube version"
 rm -rf ytextracted
 
-"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --output-dir "$run_dir/tweaks-output"
+"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
 cp -R "$run_dir/tweaks-output/built-debs/"* "$run_dir/"
 
 ensure_cyan
-tweaks="$(collect_tweaks_arg true)"
+tweaks="$(collect_tweaks_arg "$OPENSAFARI")"
 output="YouProExtra_IPA_${YT_VERSION}.ipa"
-cyan -i youtube.ipa -o "$output" -uwsfg -f $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
+cyan -i youtube.ipa -o "$output" -uwesf $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
 copy_output "$output"

@@ -9,6 +9,7 @@ DEMC=true
 YTHOLD=false
 VOLUMEBOOST=false
 NATIVESHARE=false
+OPENSAFARI=true
 
 usage() {
   cat <<'USAGE'
@@ -24,6 +25,7 @@ Options:
   --ythold BOOL
   --volumeboost BOOL
   --nativeshare BOOL
+  --opensafari BOOL
   --work-dir DIR
   --output-dir DIR
   -h, --help
@@ -40,6 +42,7 @@ while [[ $# -gt 0 ]]; do
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
+    --opensafari) OPENSAFARI="$(bool_value "$2")"; shift 2 ;;
     --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
     --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
     --theos-dir) LOCAL_THEOS_DIR="$2"; shift 2 ;;
@@ -57,7 +60,9 @@ ensure_homebrew_deps
 ensure_theos
 ensure_ios_sdk
 ensure_tbd
-clone_sparse_appex "$run_dir"
+if [[ "$OPENSAFARI" = "true" ]]; then
+  clone_sparse_appex "$run_dir"
+fi
 clone_headers
 
 build_make_deb https://github.com/PoomSmart/YTVideoOverlay.git YTVideoOverlay "$run_dir/ytvo.deb" THEOS_PACKAGE_SCHEME=rootless
@@ -79,7 +84,6 @@ build_make_deb https://github.com/hbang/Alderis.git Alderis "$run_dir/alderis.de
 build_make_deb https://github.com/PoomSmart/YouSlider.git YouSlider "$run_dir/youslider.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/Tonwalter888/YouChooseQuality.git YouChooseQuality "$run_dir/youchoose.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/PoomSmart/YTSilentVote.git YTSilentVote "$run_dir/ytnovote.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/Tonwalter888/YouShare.git YouShare "$run_dir/youshare.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/castdrian/Gonerino.git Gonerino "$run_dir/gonerino.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/fosterbarnes/YTweaks.git YTweaks "$run_dir/ytweaks.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/PoomSmart/YouGetCaption.git YouGetCaption "$run_dir/ygc.deb" THEOS_PACKAGE_SCHEME=rootless
@@ -103,6 +107,8 @@ if [[ "$NATIVESHARE" = "true" ]]; then
 fi
 
 mkdir -p "$LOCAL_OUTPUT_DIR/built-debs"
-cp -R OpenYouTubeSafariExtension.appex "$LOCAL_OUTPUT_DIR/built-debs/"
+if [[ -d OpenYouTubeSafariExtension.appex ]]; then
+  cp -R OpenYouTubeSafariExtension.appex "$LOCAL_OUTPUT_DIR/built-debs/"
+fi
 cp ./*.deb "$LOCAL_OUTPUT_DIR/built-debs/"
 log "Built debs: $LOCAL_OUTPUT_DIR/built-debs"

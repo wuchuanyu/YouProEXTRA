@@ -7,13 +7,14 @@ IPA_URL=""
 IPA_PATH=""
 DISPLAY_NAME="YouTube"
 BUNDLE_ID="com.google.ios.youtube"
+TWEAK_CHOICE=""
 YOUPIP=true
 YTUHD=true
 RYD=true
 YTABCONFIG=true
 YOUQUALITY=true
 DEMC=true
-YOUCHOOSE=false
+YOUCHOOSE=true
 GONERINO=false
 YOUGETCAPTION=false
 YTHOLD=false
@@ -23,13 +24,16 @@ OPENSAFARI=true
 
 usage() {
   cat <<'USAGE'
-Build YTKillerPlus IPA locally.
+Build LRD / DLTube IPA locally.
 
 Usage:
-  local_workflows/buildytkplus --ipa-url URL [options]
-  local_workflows/buildytkplus --ipa-path PATH [options]
+  local_workflows/buildl --tweak-choice LRD|DLTube --ipa-url URL [options]
+  local_workflows/buildl --tweak-choice LRD|DLTube --ipa-path PATH [options]
 
-Options mirror buildytlite:
+Required:
+  --tweak-choice LRD|DLTube
+
+Options:
   --youpip BOOL --ytuhd BOOL --ryd BOOL --ytabconfig BOOL --youquality BOOL
   --demc BOOL --youchoose BOOL --gonerino BOOL --yougetcaption BOOL
   --ythold BOOL --volumeboost BOOL --nativeshare BOOL --opensafari BOOL
@@ -44,13 +48,13 @@ while [[ $# -gt 0 ]]; do
     --ipa-path) IPA_PATH="$2"; shift 2 ;;
     --display-name) DISPLAY_NAME="$2"; shift 2 ;;
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
+    --tweak-choice) TWEAK_CHOICE="$2"; shift 2 ;;
     --youpip) YOUPIP="$(bool_value "$2")"; shift 2 ;;
     --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
     --ryd) RYD="$(bool_value "$2")"; shift 2 ;;
     --ytabconfig) YTABCONFIG="$(bool_value "$2")"; shift 2 ;;
     --youquality) YOUQUALITY="$(bool_value "$2")"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
-    --ytvid) shift 2 ;;
     --youchoose) YOUCHOOSE="$(bool_value "$2")"; shift 2 ;;
     --gonerino) GONERINO="$(bool_value "$2")"; shift 2 ;;
     --yougetcaption) YOUGETCAPTION="$(bool_value "$2")"; shift 2 ;;
@@ -68,7 +72,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-run_dir="$(new_run_dir buildytkplus)"
+case "$TWEAK_CHOICE" in
+  LRD)    base_branch="main"  ; base_deb_name="TubeLRD.deb" ;;
+  DLTube) base_branch="main1" ; base_deb_name="DLTube.deb" ;;
+  *) die "--tweak-choice must be LRD or DLTube (got: ${TWEAK_CHOICE:-<empty>})" ;;
+esac
+
+run_dir="$(new_run_dir buildl)"
 cd "$run_dir"
 
 resolve_ipa "$IPA_URL" "$IPA_PATH" youtube.ipa
@@ -87,8 +97,9 @@ fi
 clone_headers
 
 build_make_deb https://github.com/PoomSmart/YTVideoOverlay.git YTVideoOverlay "$run_dir/ytvo.deb" THEOS_PACKAGE_SCHEME=rootless
-build_plain_deb https://github.com/mrdrvt99/YTKP.git YTKP "$run_dir/ytkplus.deb"
-YTKP_VERSION="$(grep '^Version:' YTKP/DEBIAN/control | awk '{print $2}')"
+clone_plain_deb_branch https://github.com/mrdrvt99/LRD-DLTube.git "$base_branch" base_tweak "$run_dir/$base_deb_name"
+TWEAK_VERSION="$(grep '^Version:' base_tweak/DEBIAN/control | awk '{print $2}')"
+[[ -n "$TWEAK_VERSION" ]] || die "could not extract base tweak version"
 
 [[ "$YOUPIP" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouPiP.git YouPiP "$run_dir/youpip.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$YTUHD" = "true" ]] && build_make_deb https://github.com/Tonwalter888/YTUHD.git YTUHD "$run_dir/ytuhd.deb" THEOS_PACKAGE_SCHEME=rootless
@@ -106,16 +117,6 @@ build_make_deb https://github.com/PoomSmart/YTVideoErrorAlert.git YTVideoErrorAl
 [[ "$NATIVESHARE" = "true" ]] && build_native_share_deb "$run_dir/nativeshare.deb"
 
 tweaks="$(collect_tweaks_arg "$OPENSAFARI")"
-output="YTKillerPlus_${YT_VERSION}_${YTKP_VERSION}.ipa"
+output="YouTube_${TWEAK_CHOICE}_${YT_VERSION}_${TWEAK_VERSION}.ipa"
 cyan -i youtube.ipa -o "$output" -uwesf $tweaks -n "$DISPLAY_NAME" -b "$BUNDLE_ID"
-
-unzip -q "$output" -d ipa_final
-rm -rf ipa_final/Payload/YouTube.app/Frameworks/CydiaSubstrate.framework
-cp -rf YTKP/releases/CydiaSubstrate.framework ipa_final/Payload/YouTube.app/Frameworks/
-ldid -S "ipa_final/Payload/YouTube.app/Frameworks/CydiaSubstrate.framework/CydiaSubstrate"
-(
-  cd ipa_final
-  zip -qr "../$output" Payload
-)
-rm -rf ipa_final
 copy_output "$output"

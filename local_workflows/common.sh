@@ -305,6 +305,28 @@ collect_tweaks_arg() {
   printf '%s\n' "$tweaks"
 }
 
+sanitize_name() {
+  local raw="$1"
+  printf '%s\n' "$raw" | tr ' ' '_' | tr -cd '[:alnum:]_.-'
+}
+
+clone_plain_deb_branch() {
+  local repo_url="$1"
+  local branch="$2"
+  local repo_dir="$3"
+  local output="$4"
+  if [[ -f "$output" ]]; then
+    log "Using existing $(basename "$output")"
+    return
+  fi
+  git clone --quiet --depth=1 --branch "$branch" --recurse-submodules "$repo_url" "$repo_dir"
+  (
+    cd "$repo_dir"
+    chmod -R 755 .
+    dpkg-deb --root-owner-group -Zgzip --build . "$output"
+  )
+}
+
 copy_output() {
   local ipa_file="$1"
   mkdir -p "$LOCAL_OUTPUT_DIR"
