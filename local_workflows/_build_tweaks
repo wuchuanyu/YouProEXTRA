@@ -38,7 +38,6 @@ while [[ $# -gt 0 ]]; do
     --youpro) YOUPRO="$(bool_value "$2")"; shift 2 ;;
     --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
-    --ytvid) shift 2 ;;
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
@@ -95,7 +94,6 @@ fi
 if [[ "$ISPONSORBLOCK" = "true" ]]; then
   build_make_deb https://github.com/Galactic-Dev/iSponsorBlock.git iSponsorBlock "$run_dir/isponsorblock.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
 fi
-build_make_deb https://github.com/PoomSmart/YTVideoErrorAlert.git YTVideoErrorAlert "$run_dir/ytvideoerror.deb" THEOS_PACKAGE_SCHEME=rootless
 if [[ "$YTHOLD" = "true" ]]; then
   build_make_deb https://github.com/joshuaseltzer/YTHoldForSpeed.git YTHoldForSpeed "$run_dir/ythold.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
 fi

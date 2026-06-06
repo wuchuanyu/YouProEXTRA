@@ -139,7 +139,7 @@ deb_version() {
 
 ensure_homebrew_deps() {
   require_cmd brew
-  brew install make ldid swiftlint dpkg
+  brew install --quiet make ldid swiftlint dpkg meson ninja
   export PATH="$(brew --prefix make)/libexec/gnubin:$PATH"
 }
 

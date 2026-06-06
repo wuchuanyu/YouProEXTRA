@@ -41,7 +41,6 @@ while [[ $# -gt 0 ]]; do
     --display-name) DISPLAY_NAME="$2"; shift 2 ;;
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
-    --ytvid) shift 2 ;;
     --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;

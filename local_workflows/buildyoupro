@@ -35,7 +35,6 @@ while [[ $# -gt 0 ]]; do
     --display-name) DISPLAY_NAME="$2"; shift 2 ;;
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
-    --ytvid) shift 2 ;;
     --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
     --opensafari) OPENSAFARI="$(bool_value "$2")"; shift 2 ;;
     --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
