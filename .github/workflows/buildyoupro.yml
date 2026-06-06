@@ -20,13 +20,13 @@ on:
         default: "com.google.ios.youtube"
         required: true
         type: string
-        
+
       opensafari:
         description: "Integrate Open in YouTube (Safari Extension)"
         default: true
         required: false
         type: boolean
-        
+
       demc:
         description: "Integrate DontEatMyContent"
         default: true
@@ -38,13 +38,13 @@ on:
         default: true
         required: false
         type: boolean
-        
+
 #      ythold:
 #        description: "Integrate YTHoldForSpeed"
 #        default: false
 #        required: false
 #        type: boolean
-        
+
 #      nativeshare:
 #        description: "Integrate YTNativeShare"
 #        default: false
@@ -62,17 +62,18 @@ jobs:
       youpro: true
       isponsorblock: ${{ inputs.isponsorblock }}
       demc: ${{ inputs.demc }}
-#      ythold: ${{ inputs.ythold }}
-#      nativeshare: ${{ inputs.nativeshare }}
+#     ythold: ${{ inputs.ythold }}
+#     nativeshare: ${{ inputs.nativeshare }}
       opensafari: ${{ inputs.opensafari }}
-      
+
   package:
     name: Build YouPro IPA
     runs-on: macos-latest
     needs: build-tweaks
     permissions:
       contents: write
-
+    env:
+      HOMEBREW_NO_ENV_HINTS: 1
     steps:
       - name: Download Built Debs
         uses: actions/download-artifact@v8.0.1
@@ -99,7 +100,7 @@ jobs:
           unzip -q youtube.ipa -d ytextracted
           echo "YT_VERSION=$(grep -A 1 '<key>CFBundleVersion</key>' ytextracted/Payload/YouTube.app/Info.plist | grep '<string>' | awk -F'[><]' '{print $3}')" >> $GITHUB_ENV
           rm -rf ytextracted
-          
+
       - name: Get YouPro Version
         run: |
           mkdir _youpro_extract && cd _youpro_extract
@@ -136,7 +137,7 @@ jobs:
             [ -f "$f" ] && tweaks="$tweaks $f"
           done
           cyan -i youtube.ipa -o YouProExtra_${{ env.YT_VERSION }}_${{ env.YOUPRO_VERSION }}.ipa -uwesf $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
-          
+
       - name: Create a Draft Release
         env:
           GH_TOKEN: ${{ github.token }}

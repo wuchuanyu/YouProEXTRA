@@ -98,9 +98,6 @@ inputs:
   demc_commit:
     required: false
     default: 'disabled'
-  ytvid_commit:
-    required: false
-    default: 'disabled'
   ythold_commit:
     required: false
     default: 'disabled'
@@ -109,7 +106,7 @@ inputs:
     default: 'disabled'  
   nativeshare_commit:
     required: false
-    default: 'disabled'  
+    default: 'disabled'
 
 outputs:
   cache_youpip_hit:        { value: "${{ steps.cache_youpip.outputs.cache-hit }}" }
@@ -132,7 +129,6 @@ outputs:
   cache_iamyoutube_hit:    { value: "${{ steps.cache_iamyoutube.outputs.cache-hit }}" }
   cache_isponsorblock_hit: { value: "${{ steps.cache_isponsorblock.outputs.cache-hit }}" }
   cache_demc_hit:          { value: "${{ steps.cache_demc.outputs.cache-hit }}" }
-  cache_ytvid_hit:         { value: "${{ steps.cache_ytvid.outputs.cache-hit }}" }
   cache_ythold_hit:        { value: "${{ steps.cache_ythold.outputs.cache-hit }}" }
   cache_volumeboost_hit:   { value: "${{ steps.cache_volumeboost.outputs.cache-hit }}" }
   cache_nativeshare_hit:   { value: "${{ steps.cache_nativeshare.outputs.cache-hit }}" }
@@ -280,12 +276,6 @@ runs:
         key: demc-${{ inputs.demc_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v5.0.5
-      id: cache_ytvid
-      with:
-        path: ${{ github.workspace }}/ytvideoerror.deb
-        key: ytvid-${{ inputs.ytvid_commit }}-sdk${{ inputs.sdk_version }}
-        
-    - uses: actions/cache@v5.0.5
       if: inputs.ythold == 'true'
       id: cache_ythold
       with:
@@ -298,7 +288,7 @@ runs:
       with:
         path: ${{ github.workspace }}/volumeboost.deb
         key: volumeboost-${{ inputs.volumeboost_commit }}-arm64-sdk${{ inputs.sdk_version }}
-        
+
     - uses: actions/cache@v5.0.5
       if: inputs.nativeshare == 'true'
       id: cache_nativeshare

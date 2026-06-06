@@ -1,4 +1,4 @@
-name: Build IPA
+name: Build IPA (No Tweak)
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ on:
         default: "com.google.ios.youtube"
         required: true
         type: string
-        
+
       opensafari:
         description: "Integrate Open in YouTube (Safari Extension)"
         default: true
@@ -38,7 +38,7 @@ on:
         default: true
         required: false
         type: boolean
-        
+
       ythold:
         description: "Integrate YTHoldForSpeed"
         default: false
@@ -50,7 +50,7 @@ on:
         default: false
         required: false
         type: boolean
-        
+
       nativeshare:
         description: "Integrate YTNativeShare"
         default: false
@@ -79,7 +79,8 @@ jobs:
     needs: build-tweaks
     permissions:
       contents: write
-
+    env:
+      HOMEBREW_NO_ENV_HINTS: 1
     steps:
       - name: Download Built Debs
         uses: actions/download-artifact@v8.0.1
@@ -121,7 +122,7 @@ jobs:
             [ -f "$f" ] && tweaks="$tweaks $f"
           done
           cyan -i youtube.ipa -o YouProExtra_IPA_${{ env.YT_VERSION }}.ipa -uwesf $tweaks -n "${{ inputs.display_name }}" -b ${{ inputs.bundle_id }}
-          
+
       - name: Create a Draft Release
         env:
           GH_TOKEN: ${{ github.token }}

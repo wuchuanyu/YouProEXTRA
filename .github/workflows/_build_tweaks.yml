@@ -36,13 +36,14 @@ jobs:
   build-tweaks:
     name: Build Tweaks
     runs-on: macos-latest
-
+    env:
+      HOMEBREW_NO_ENV_HINTS: 1
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6.0.2
 
       - name: Install Dependencies
-        run: brew install make ldid swiftlint dpkg
+        run: brew install --quiet make ldid swiftlint dpkg meson ninja
 
       - name: Set PATH Environment Variables
         run: |
@@ -136,7 +137,6 @@ jobs:
           iamyoutube_commit: ${{ steps.commit_hashes.outputs.iamyoutube }}
           isponsorblock_commit: ${{ steps.commit_hashes.outputs.isponsorblock }}
           demc_commit: ${{ steps.commit_hashes.outputs.demc }}
-          ytvid_commit: ${{ steps.commit_hashes.outputs.ytvid }}
           ythold_commit: ${{ steps.commit_hashes.outputs.ythold }}
           volumeboost_commit: ${{ steps.commit_hashes.outputs.volumeboost }}
           nativeshare_commit: ${{ steps.commit_hashes.outputs.nativeshare }}
@@ -154,7 +154,7 @@ jobs:
           cd YouPro
           chmod -R 755 .
           dpkg-deb --root-owner-group -Zgzip --build . ../YouPro.deb
-          
+
       - name: Clone and Build YouPiP
         if: steps.cache_tweaks.outputs.cache_youpip_hit != 'true'
         run: |
@@ -288,13 +288,6 @@ jobs:
           cd iSponsorBlock && make clean package DEBUG=0 FINALPACKAGE=1 ROOTLESS=1 ARCHS=arm64 TARGET=iphone:clang:18.6:13.0
           mv packages/*.deb ${{ github.workspace }}/isponsorblock.deb
 
-      - name: Clone and Build YTVideoErrorAlert
-        if: steps.cache_tweaks.outputs.cache_ytvid_hit != 'true'
-        run: |
-          git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoErrorAlert.git
-          cd YTVideoErrorAlert && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/ytvideoerror.deb
-          
       - name: Clone and Build YTHoldForSpeed
         if: inputs.ythold == true && steps.cache_tweaks.outputs.cache_ythold_hit != 'true'
         run: |
@@ -308,7 +301,7 @@ jobs:
           git clone --quiet --depth=1 https://github.com/VasirakCalgux/VolumeBoostYT.git
           cd VolumeBoostYT && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
           mv packages/*.deb ${{ github.workspace }}/volumeboost.deb
-          
+
       - name: Clone and Build YTNativeShare
         if: inputs.nativeshare == true && steps.cache_tweaks.outputs.cache_nativeshare_hit != 'true'
         run: |
