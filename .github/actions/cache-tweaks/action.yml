@@ -7,9 +7,9 @@ inputs:
   youpip:
     required: false
     default: 'true'
-  ytuhd:
-    required: false
-    default: 'true'
+#  ytuhd:
+#    required: false
+#    default: 'true'
   ryd:
     required: false
     default: 'true'
@@ -26,6 +26,27 @@ inputs:
     required: false
     default: 'true'
   yougetcaption:
+    required: false
+    default: 'true'
+  youslider:
+    required: false
+    default: 'true'
+  ytsilentvote:
+    required: false
+    default: 'true'
+  ytweaks:
+    required: false
+    default: 'true'
+  youspeed:
+    required: false
+    default: 'true'
+  youmute:
+    required: false
+    default: 'true'
+  youloop:
+    required: false
+    default: 'true'
+  alderis:
     required: false
     default: 'true'
   isponsorblock:
@@ -47,8 +68,8 @@ inputs:
     required: true
   youpip_commit:
     required: true
-  ytuhd_commit:
-    required: true
+#  ytuhd_commit:
+#    required: true
   ryd_commit:
     required: true
   ygs_commit:
@@ -107,10 +128,12 @@ inputs:
   nativeshare_commit:
     required: false
     default: 'disabled'
-
+  youfixplaybackissues_commit:
+    required: true
+    
 outputs:
   cache_youpip_hit:        { value: "${{ steps.cache_youpip.outputs.cache-hit }}" }
-  cache_ytuhd_hit:         { value: "${{ steps.cache_ytuhd.outputs.cache-hit }}" }
+#  cache_ytuhd_hit:         { value: "${{ steps.cache_ytuhd.outputs.cache-hit }}" }
   cache_ryd_hit:           { value: "${{ steps.cache_ryd.outputs.cache-hit }}" }
   cache_ygs_hit:           { value: "${{ steps.cache_ygs.outputs.cache-hit }}" }
   cache_ytvo_hit:          { value: "${{ steps.cache_ytvo.outputs.cache-hit }}" }
@@ -132,166 +155,173 @@ outputs:
   cache_ythold_hit:        { value: "${{ steps.cache_ythold.outputs.cache-hit }}" }
   cache_volumeboost_hit:   { value: "${{ steps.cache_volumeboost.outputs.cache-hit }}" }
   cache_nativeshare_hit:   { value: "${{ steps.cache_nativeshare.outputs.cache-hit }}" }
+  cache_youfixplaybackissues_hit: { value: "${{ steps.cache_youfixplaybackissues.outputs.cache-hit }}" }
 
 runs:
   using: composite
   steps:
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.youpip == 'true'
       id: cache_youpip
       with:
         path: ${{ github.workspace }}/youpip.deb
         key: youpip-${{ inputs.youpip_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.ytuhd == 'true'
-      id: cache_ytuhd
-      with:
-        path: ${{ github.workspace }}/ytuhd.deb
-        key: ytuhd-v2-${{ inputs.ytuhd_commit }}-sdk${{ inputs.sdk_version }}
+#    - uses: actions/cache@v6
+#      if: inputs.ytuhd == 'true'
+#      id: cache_ytuhd
+#      with:
+#        path: ${{ github.workspace }}/ytuhd.deb
+#        key: ytuhd-v2-${{ inputs.ytuhd_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.ryd == 'true'
       id: cache_ryd
       with:
         path: ${{ github.workspace }}/ryd.deb
         key: ryd-${{ inputs.ryd_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       id: cache_ygs
       with:
         path: ${{ github.workspace }}/ygs.deb
         key: ygs-${{ inputs.ygs_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.ytabconfig == 'true'
       id: cache_ytabconfig
       with:
         path: ${{ github.workspace }}/ytabconfig.deb
         key: ytabconfig-${{ inputs.ytabconfig_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.youquality == 'true'
       id: cache_youquality
       with:
         path: ${{ github.workspace }}/youquality.deb
         key: youquality-${{ inputs.youquality_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       id: cache_ytvo
       with:
         path: ${{ github.workspace }}/ytvo.deb
         key: ytvo-${{ inputs.ytvo_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.youspeed_commit != ''
+    - uses: actions/cache@v6
+      if: inputs.youspeed == 'true' && inputs.youspeed_commit != ''
       id: cache_youspeed
       with:
         path: ${{ github.workspace }}/youspeed.deb
         key: youspeed-v1-${{ inputs.youspeed_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.youmute_commit != ''
+    - uses: actions/cache@v6
+      if: inputs.youmute == 'true' && inputs.youmute_commit != ''
       id: cache_youmute
       with:
         path: ${{ github.workspace }}/ym.deb
         key: youmute-v1-${{ inputs.youmute_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.youloop_commit != ''
+    - uses: actions/cache@v6
+      if: inputs.youloop == 'true' && inputs.youloop_commit != ''
       id: cache_youloop
       with:
         path: ${{ github.workspace }}/youloop.deb
         key: youloop-${{ inputs.youloop_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.alderis_commit != ''
+    - uses: actions/cache@v6
+      if: inputs.alderis == 'true' && inputs.alderis_commit != ''
       id: cache_alderis
       with:
         path: ${{ github.workspace }}/alderis.deb
         key: alderis-${{ inputs.alderis_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.youslider_commit != ''
+    - uses: actions/cache@v6
+      if: inputs.youslider == 'true' && inputs.youslider_commit != ''
       id: cache_youslider
       with:
         path: ${{ github.workspace }}/youslider.deb
         key: youslider-${{ inputs.youslider_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.youchoose == 'true'
       id: cache_youchoose
       with:
         path: ${{ github.workspace }}/youchoose.deb
-        key: youchoose-${{ inputs.youchoose_commit }}-sdk${{ inputs.sdk_version }}
+        key: youchoose-v1-${{ inputs.youchoose_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.ytsilentvote_commit != ''
+    - uses: actions/cache@v6
+      if: inputs.ytsilentvote == 'true' && inputs.ytsilentvote_commit != ''
       id: cache_ytsilentvote
       with:
         path: ${{ github.workspace }}/ytnovote.deb
         key: ytsilentvote-${{ inputs.ytsilentvote_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.gonerino == 'true'
       id: cache_gonerino
       with:
         path: ${{ github.workspace }}/gonerino.deb
         key: gonerino-${{ inputs.gonerino_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
-      if: inputs.ytweaks_commit != ''
+    - uses: actions/cache@v6
+      if: inputs.ytweaks == 'true' && inputs.ytweaks_commit != ''
       id: cache_ytweaks
       with:
         path: ${{ github.workspace }}/ytweaks.deb
         key: ytweaks-${{ inputs.ytweaks_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.yougetcaption == 'true'
       id: cache_yougetcaption
       with:
         path: ${{ github.workspace }}/ygc.deb
         key: yougetcaption-${{ inputs.yougetcaption_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.iamyoutube_commit != ''
       id: cache_iamyoutube
       with:
         path: ${{ github.workspace }}/imyt.deb
         key: iamyoutube-${{ inputs.iamyoutube_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.isponsorblock == 'true'
       id: cache_isponsorblock
       with:
         path: ${{ github.workspace }}/isponsorblock.deb
         key: isponsorblock-v1-${{ inputs.isponsorblock_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.demc == 'true'
       id: cache_demc
       with:
         path: ${{ github.workspace }}/demc.deb
         key: demc-${{ inputs.demc_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.ythold == 'true'
       id: cache_ythold
       with:
         path: ${{ github.workspace }}/ythold.deb
         key: ythold-${{ inputs.ythold_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.volumeboost == 'true'
       id: cache_volumeboost
       with:
         path: ${{ github.workspace }}/volumeboost.deb
         key: volumeboost-${{ inputs.volumeboost_commit }}-arm64-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v5.0.5
+    - uses: actions/cache@v6
       if: inputs.nativeshare == 'true'
       id: cache_nativeshare
       with:
         path: ${{ github.workspace }}/nativeshare.deb
         key: nativeshare-${{ inputs.nativeshare_commit }}-sdk${{ inputs.sdk_version }}
+        
+    - uses: actions/cache@v6
+      id: cache_youfixplaybackissues
+      with:
+        path: ${{ github.workspace }}/youfixplaybackissues.deb
+        key: youfixplaybackissues-${{ inputs.youfixplaybackissues_commit }}-sdk${{ inputs.sdk_version }}

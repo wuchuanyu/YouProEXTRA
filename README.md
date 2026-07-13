@@ -4,35 +4,40 @@ YouTube IPA builder packed with customizable tweaks. Also Known as Youtubemaxxin
 ## Main features
 - **[YouPro](https://t.me/alibusut)** - Basic Youtube Premium features; Download Videos, No ads, Background Playback.
 - **[YoutubePlus/YTLite](https://github.com/dayanch96/YTLite)** - A flexible enhancer for YouTube on iOS, featuring over hundred customizable options.
-- **[YTKillerPlus](https://repo.ikghd.me/depictions/?p=me.ikghd.ytkplus)** - Alternative Youtube tweak with more custiomized options.
+- **[YTKillerPlus](https://repo.ikghd.me/depictions/?p=me.ikghd.ytkplus)** - Alternative Youtube tweak with more customized options.
 - **[YouMod](https://github.com/Tonwalter888/YouMod)** - a free alternative youtube tweak.
 - **[LRD](https://t.me/LRD_Update)/[DLTube](https://x.com/dltweaks_)** - more optional YouTube tweaks. Download Videos, No ads and Background Playback.
 - **[YTMusicUltimate](https://github.com/mrdrvt99/YTMusicUltimate)** - Background playback, ad removal, Downloads and other small improvements.
 - [YouPip](https://github.com/PoomSmart/YouPiP) -  Enables native PiP in iOS YouTube app.
-- [YTUHD](https://github.com/Tonwalter888/YTUHD) - Unlocks 1440p and 2160p resolutions in iOS YouTube app.
+- [YTUHD](https://github.com/Tonwalter888/YTUHD) - Unlocks 1440p and 2160p resolutions in iOS YouTube app.**(unstable tweak)**
+  > ⚠️ **Removed:** No longer functional. Temporarily disabled.
 - [ReturnYoutubeDislikes](https://github.com/PoomSmart/Return-YouTube-Dislikes) -  Brings Back Dislikes On YouTube iOS. 
-- [YouMute](https://github.com/PoomSmart/YouMute) - Mutes/unmutes videos on iOS YouTube app faster.(custom build)
-- [YouSpeed](https://github.com/PoomSmart/YouSpeed) - Views/changes video speed in iOS YouTube app faster.(custom build)
+- [YouMute](https://github.com/PoomSmart/YouMute) - Mutes/unmutes videos on iOS YouTube app faster.**(custom build)**
+- [YouSpeed](https://github.com/PoomSmart/YouSpeed) - Views/changes video speed in iOS YouTube app faster.**(custom build)**
 - [YTABConfig](https://github.com/PoomSmart/YTABConfig) - Configures A/B settings in iOS YouTube app.
-- [YouLoop](https://github.com/bhackel/YouLoop.git) - Adds a player button to enable/disable looping on the current video.(custom build)
+- [YouLoop](https://github.com/bhackel/YouLoop.git) - Adds a player button to enable/disable looping on the current video.**(custom build)**
 - [YouQuality](https://github.com/PoomSmart/YTABConfig) - Views/changes video quality on iOS YouTube app faster.
 - [YouChooseQuality](https://github.com/PoomSmart/YouChooseQuality) - Auto-selects the video quality of choice in iOS YouTube app.
-- [YouSlider](https://github.com/PoomSmart/YouSlider) - Customizes iOS YouTube video slider and scrubber.(custom build)
-- [YTSilentVote](https://github.com/PoomSmart/YTSilentVote.git) - No messages will pop up as you like/dislike videos.(custom build)
+- [YouSlider](https://github.com/PoomSmart/YouSlider) - Customizes iOS YouTube video slider and scrubber.**(custom build)**
+- [YTSilentVote](https://github.com/PoomSmart/YTSilentVote.git) - No messages will pop up as you like/dislike videos.**(custom build)**
 - [YouGetCaption](https://github.com/PoomSmart/YouGetCaption) - Views and copies caption from YouTube videos.
-- [YTweaks](https://github.com/fosterbarnes/YTweaks) - Various tweaks for the iOS YouTube app.(custom build)
+- [YTweaks](https://github.com/fosterbarnes/YTweaks) - Various tweaks for the iOS YouTube app.**(custom build)**
 - [Gonerino](https://github.com/castdrian/Gonerino) - Filter videos/channels/keywords that you don't want them to show up on your feeds
 - [iSponsorBlock](https://github.com/Galactic-Dev/iSponsorBlock.git) - Skip Sponsorships in youtube videos. 
 - [DontEatMyContent](https://github.com/therealFoxster/DontEatMyContent) - Prevent the notch/Dynamic Island from munching on 2:1 video content in YouTube 
 - [YTHoldForSpeed](https://github.com/joshuaseltzer/YTHoldForSpeed) - Tap and hold on the YouTube video player to toggle a selected playback speed.
-- [VolumeBoostYT](https://github.com/VasirakCalgux/VolumeBoostYT) - Gesture-based volume control for the YouTube app, completely separate from the system volume. **(NOTE: turn off/on tweak again if the audio is not playing)**
+- [VolumeBoostYT](https://github.com/VasirakCalgux/VolumeBoostYT) - Gesture-based volume control for the YouTube app, completely separate from the system volume.
+  > ⚠️ **NOTE:** Turn off/on tweak again if the audio is not playing.
+  > 
+  > ⚠️ **NOTE:** If you're having issues with right-edge keyboard buttons not responding, turn it off.
 - [YTNativeShare](https://github.com/jkhsjdhjs/youtube-native-share) -  Bypass YouTubes own share sheet and use the system activity view instead. Removes source identifiers (si). 
+- [YouFixPlaybackIssues](https://github.com/AppropriateNet2928/YTLitePlusRenewed) -  Core Tweak designed to fix playback issues like "Something went wrong, try again" and "no stream. tap to retry"
 
 > [!IMPORTANT]
 > ## 🆕 New Feature
 > YouProEXTRA now has an official AltStore/Esign/Feather/SideStore/LiveContainer source. Install any mod directly on your device and get automatic updates. no building, no decrypted IPAs required.
 >
-> AIO Package and separate source files. links are avaliable below
+> AIO Package and separate source files. links are available below
 > 
 > Read Instructions here 👉 [mrdrvt99/Altstore-Repository](https://github.com/mrdrvt99/Altstore-Repository)
 > 
@@ -41,7 +46,7 @@ YouTube IPA builder packed with customizable tweaks. Also Known as Youtubemaxxin
 
 ## How to build a YouProEXTRA IPA using Github Actions
 > [!NOTE]
-> If this your first time, complete following steps before starting:
+> If this is your first time, complete following steps before starting:
 >
 > 1. Fork this repository using the fork button on the top right
 > 2. On your forked repository, go to **Settings** -> **Actions**, and enable **Read and Write** permissions.
@@ -75,9 +80,11 @@ YouTube IPA builder packed with customizable tweaks. Also Known as Youtubemaxxin
   </ol>
 </details>
 
+NOTE: If you modified workflow files, delete any existing caches in the Actions tab before running a new build.
+
 ## Supported YouTube version
 <ul>
-   <li><strong>Latest confirmed:</strong> 21.22.4</li>
-   <li><strong>Date tested:</strong> June 4, 2026</li>
-   <li><strong>YouPro/YTLite/YTKP:</strong> 0.3/5.2.1/5.3.2</li>
+   <li><strong>Latest confirmed:</strong> 21.28.3</li>
+   <li><strong>Date tested:</strong> July 13, 2026</li>
+   <li><strong>YouPro(21.26.4)/YTLite/YTKP:</strong> 0.3/5.2.1/5.8.8</li>
 </ul>

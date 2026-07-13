@@ -18,15 +18,19 @@ runs:
   steps:
     - name: Restore Theos cache
       id: cache
-      uses: actions/cache@v5.0.5
+      uses: actions/cache@v6
       with:
         path: ${{ github.workspace }}/theos
-        key: theos-v2-${{ inputs.theos_commit }}-sdk${{ inputs.sdk_version }}
+        key: theos-v3-9bc73406cf80b711ef4d02c15ff1dedc4478a275-sdk${{ inputs.sdk_version }}
 
     - name: Clone Theos
       if: steps.cache.outputs.cache-hit != 'true'
       shell: bash
-      run: git clone --quiet --depth=1 --recurse-submodules https://github.com/theos/theos.git ${{ github.workspace }}/theos
+      run: |
+        git clone --quiet https://github.com/theos/theos.git ${{ github.workspace }}/theos
+        cd ${{ github.workspace }}/theos
+        git checkout --quiet 9bc73406cf80b711ef4d02c15ff1dedc4478a275
+        git submodule update --quiet --init --recursive --depth=1
 
     - name: Set THEOS env
       shell: bash

@@ -1,13 +1,13 @@
-name: Build LRD/DLTube IPA
+name: Build TubeLRD/DLTube IPA
 on:
   workflow_dispatch:
     inputs:
       tweak_choice:
-        description: "LRD/DLTube"
+        description: "TubeLRD/DLTube"
         required: true
         type: choice
         options:
-          - LRD
+          - TubeLRD
           - DLTube
 
       ipa_url:
@@ -46,11 +46,11 @@ on:
         required: false
         type: boolean
 
-      ytuhd:
-        description: "Integrate YTUHD"
-        default: true
-        required: false
-        type: boolean
+#      ytuhd:
+#        description: "Integrate YTUHD"
+#        default: true
+#        required: false
+#        type: boolean
 
       ryd:
         description: "Integrate Return YouTube Dislikes"
@@ -112,20 +112,20 @@ concurrency:
 
 jobs:
   build:
-    name: Build LRD/DLTube IPA
-    runs-on: macos-latest
+    name: Build TubeLRD/DLTube IPA
+    runs-on: macos-15
     permissions:
       contents: write
     env:
       HOMEBREW_NO_ENV_HINTS: 1
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7
 
       - name: Hide Sensitive Inputs
-        uses: levibostian/action-hide-sensitive-inputs@1.2.0
+        uses: levibostian/action-hide-sensitive-inputs@v1
         with:
-          exclude_inputs: tweak_choice,bundle_id,display_name,youpip,ytuhd,ryd,ytabconfig,youquality,gonerino,yougetcaption,demc,youchoose,ythold,volumeboost,nativeshare,opensafari
+          exclude_inputs: tweak_choice,bundle_id,display_name,youpip,ryd,ytabconfig,youquality,gonerino,yougetcaption,demc,youchoose,ythold,volumeboost,nativeshare,opensafari
 
       - name: Download and Validate IPA
         run: |
@@ -152,7 +152,10 @@ jobs:
           nativeshare: ${{ inputs.nativeshare }}
 
       - name: Install Dependencies
-        run: brew install --quiet make ldid swiftlint dpkg meson ninja
+        run: |
+          brew uninstall --ignore-dependencies bicep || true
+          brew untap aws/tap azure/bicep || true
+          brew install --quiet make ldid swiftlint dpkg meson ninja
 
       - name: Set PATH Environment Variables
         run: |
@@ -212,7 +215,7 @@ jobs:
         with:
           sdk_version: '18.6'
           youpip: ${{ inputs.youpip }}
-          ytuhd: ${{ inputs.ytuhd }}
+#          ytuhd: ${{ inputs.ytuhd }}
           ryd: ${{ inputs.ryd }}
           ytabconfig: ${{ inputs.ytabconfig }}
           youquality: ${{ inputs.youquality }}
@@ -225,7 +228,7 @@ jobs:
           nativeshare: ${{ inputs.nativeshare }}
           theos_commit: ${{ steps.commit_hashes.outputs.theos }}
           youpip_commit: ${{ steps.commit_hashes.outputs.youpip }}
-          ytuhd_commit: ${{ steps.commit_hashes.outputs.ytuhd }}
+#          ytuhd_commit: ${{ steps.commit_hashes.outputs.ytuhd }}
           ryd_commit: ${{ steps.commit_hashes.outputs.ryd }}
           ygs_commit: ${{ steps.commit_hashes.outputs.ygs }}
           ytvo_commit: ${{ steps.commit_hashes.outputs.ytvo }}
@@ -238,7 +241,8 @@ jobs:
           ythold_commit: ${{ steps.commit_hashes.outputs.ythold }}
           volumeboost_commit: ${{ steps.commit_hashes.outputs.volumeboost }}
           nativeshare_commit: ${{ steps.commit_hashes.outputs.nativeshare }}
-
+          youfixplaybackissues_commit: ${{ steps.commit_hashes.outputs.youfixplaybackissues }}
+          
       - name: Build YTVideoOverlay
         if: steps.cache_tweaks.outputs.cache_ytvo_hit != 'true'
         run: |
@@ -246,10 +250,10 @@ jobs:
           mv packages/*.deb ${{ github.workspace }}/ytvo.deb
 
       - name: Checkout Base Tweak
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7
         with:
           repository: mrdrvt99/LRD-DLTube
-          ref: ${{ inputs.tweak_choice == 'LRD' && 'main' || 'main1' }}
+          ref: ${{ inputs.tweak_choice == 'TubeLRD' && 'main' || 'main1' }}
           path: base_tweak
           submodules: recursive
 
@@ -258,7 +262,7 @@ jobs:
           cd base_tweak
           echo "TWEAK_VERSION=$(grep '^Version:' DEBIAN/control | awk '{print $2}')" >> $GITHUB_ENV
           chmod -R 755 .
-          if [ "${{ inputs.tweak_choice }}" = "LRD" ]; then
+          if [ "${{ inputs.tweak_choice }}" = "TubeLRD" ]; then
             dpkg-deb --root-owner-group -Zgzip --build . ${{ github.workspace }}/TubeLRD.deb
           else
             dpkg-deb --root-owner-group -Zgzip --build . ${{ github.workspace }}/DLTube.deb
@@ -271,12 +275,12 @@ jobs:
           cd YouPiP && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youpip.deb
 
-      - name: Clone and Build YTUHD
-        if: inputs.ytuhd == true && steps.cache_tweaks.outputs.cache_ytuhd_hit != 'true'
-        run: |
-          git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
-          cd YTUHD && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/ytuhd.deb
+#      - name: Clone and Build YTUHD
+#        if: inputs.ytuhd == true && steps.cache_tweaks.outputs.cache_ytuhd_hit != 'true'
+#        run: |
+#          git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
+#          cd YTUHD && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+#         mv packages/*.deb ${{ github.workspace }}/ytuhd.deb
 
       - name: Clone and Build Return-YouTube-Dislikes
         if: inputs.ryd == true && steps.cache_tweaks.outputs.cache_ryd_hit != 'true'
@@ -309,7 +313,7 @@ jobs:
       - name: Clone and Build YouChooseQuality
         if: inputs.youchoose == true && steps.cache_tweaks.outputs.cache_youchoose_hit != 'true'
         run: |
-          git clone --quiet --depth=1 https://github.com/Tonwalter888/YouChooseQuality.git
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouChooseQuality.git
           cd YouChooseQuality && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youchoose.deb
 
@@ -338,7 +342,7 @@ jobs:
         if: inputs.ythold == true && steps.cache_tweaks.outputs.cache_ythold_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/joshuaseltzer/YTHoldForSpeed.git
-          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
+          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
           mv packages/*.deb ${{ github.workspace }}/ythold.deb
 
       - name: Clone and Build VolumeBoostYT
@@ -357,6 +361,13 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
           mv packages/*.deb ${{ github.workspace }}/nativeshare.deb
 
+      - name: Clone and Build YouFixPlaybackIssues
+        if: steps.cache_tweaks.outputs.cache_youfixplaybackissues_hit != 'true'
+        run: |
+          git clone --quiet --depth=1 https://github.com/mrdrvt99/YouFixPlaybackIssues.git
+          cd YouFixPlaybackIssues/YouFixPlaybackIssues && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless TARGET=iphone:clang:18.6
+          mv packages/*.deb ${{ github.workspace }}/youfixplaybackissues.deb
+          
       - name: Inject Tweaks Into IPA
         run: |
           tweaks=""
