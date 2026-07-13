@@ -33,11 +33,11 @@ on:
         required: false
         type: boolean
 
-      ytuhd:
-        description: "Integrate YTUHD"
-        default: true
-        required: false
-        type: boolean
+#      ytuhd:
+#        description: "Integrate YTUHD"
+#        default: true
+#        required: false
+#        type: boolean
 
       ryd:
         description: "Integrate Return YouTube Dislikes"
@@ -147,7 +147,7 @@ jobs:
       isponsorblock: ${{ inputs.isponsorblock }}
       demc: ${{ inputs.demc }}
       youpip: ${{ inputs.youpip }}
-      ytuhd: ${{ inputs.ytuhd }}
+#      ytuhd: ${{ inputs.ytuhd }}
       ryd: ${{ inputs.ryd }}
       ytabconfig: ${{ inputs.ytabconfig }}
       youquality: ${{ inputs.youquality }}
@@ -182,7 +182,7 @@ jobs:
       - name: Hide Sensitive Inputs
         uses: levibostian/action-hide-sensitive-inputs@v1
         with:
-          exclude_inputs: bundle_id,display_name,demc,isponsorblock,opensafari,youpip,ytuhd,ryd,ytabconfig,youquality,youslider,ytsilentvote,ytweaks,youchoose,gonerino,yougetcaption,youspeed,youmute,youloop
+          exclude_inputs: bundle_id,display_name,demc,isponsorblock,opensafari,youpip,ryd,ytabconfig,youquality,youslider,ytsilentvote,ytweaks,youchoose,gonerino,yougetcaption,youspeed,youmute,youloop
 
       - name: Download and Validate IPA
         run: |

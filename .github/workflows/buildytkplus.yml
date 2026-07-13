@@ -38,11 +38,11 @@ on:
         required: false
         type: boolean
 
-      ytuhd:
-        description: "Integrate YTUHD"
-        default: true
-        required: false
-        type: boolean
+#      ytuhd:
+#        description: "Integrate YTUHD"
+#        default: true
+#        required: false
+#        type: boolean
 
       ryd:
         description: "Integrate Return YouTube Dislikes"
@@ -117,7 +117,7 @@ jobs:
       - name: Hide Sensitive Inputs
         uses: levibostian/action-hide-sensitive-inputs@v1
         with:
-          exclude_inputs: bundle_id,display_name,youpip,ytuhd,ryd,ytabconfig,youquality,gonerino,yougetcaption,demc,youchoose,ythold,volumeboost,nativeshare,opensafari
+          exclude_inputs: bundle_id,display_name,youpip,ryd,ytabconfig,youquality,gonerino,yougetcaption,demc,youchoose,ythold,volumeboost,nativeshare,opensafari
 
       - name: Download and Validate IPA
         run: |
@@ -207,7 +207,7 @@ jobs:
         with:
           sdk_version: '18.6'
           youpip: ${{ inputs.youpip }}
-          ytuhd: ${{ inputs.ytuhd }}
+#          ytuhd: ${{ inputs.ytuhd }}
           ryd: ${{ inputs.ryd }}
           ytabconfig: ${{ inputs.ytabconfig }}
           youquality: ${{ inputs.youquality }}
@@ -220,7 +220,7 @@ jobs:
           nativeshare: ${{ inputs.nativeshare }}
           theos_commit: ${{ steps.commit_hashes.outputs.theos }}
           youpip_commit: ${{ steps.commit_hashes.outputs.youpip }}
-          ytuhd_commit: ${{ steps.commit_hashes.outputs.ytuhd }}
+#          ytuhd_commit: ${{ steps.commit_hashes.outputs.ytuhd }}
           ryd_commit: ${{ steps.commit_hashes.outputs.ryd }}
           ygs_commit: ${{ steps.commit_hashes.outputs.ygs }}
           ytvo_commit: ${{ steps.commit_hashes.outputs.ytvo }}
@@ -233,7 +233,8 @@ jobs:
           ythold_commit: ${{ steps.commit_hashes.outputs.ythold }}
           volumeboost_commit: ${{ steps.commit_hashes.outputs.volumeboost }}
           nativeshare_commit: ${{ steps.commit_hashes.outputs.nativeshare }}
-
+          youfixplaybackissues_commit: ${{ steps.commit_hashes.outputs.youfixplaybackissues }}
+          
       - name: Build YTVideoOverlay
         if: steps.cache_tweaks.outputs.cache_ytvo_hit != 'true'
         run: |
@@ -255,12 +256,12 @@ jobs:
           cd YouPiP && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youpip.deb
 
-      - name: Clone and Build YTUHD
-        if: inputs.ytuhd == true && steps.cache_tweaks.outputs.cache_ytuhd_hit != 'true'
-        run: |
-          git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
-          cd YTUHD && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
-          mv packages/*.deb ${{ github.workspace }}/ytuhd.deb
+#      - name: Clone and Build YTUHD
+#        if: inputs.ytuhd == true && steps.cache_tweaks.outputs.cache_ytuhd_hit != 'true'
+#        run: |
+#          git clone --quiet --depth=1 https://github.com/Tonwalter888/YTUHD.git
+#          cd YTUHD && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+#          mv packages/*.deb ${{ github.workspace }}/ytuhd.deb
 
       - name: Clone and Build Return-YouTube-Dislikes
         if: inputs.ryd == true && steps.cache_tweaks.outputs.cache_ryd_hit != 'true'
@@ -293,7 +294,7 @@ jobs:
       - name: Clone and Build YouChooseQuality
         if: inputs.youchoose == true && steps.cache_tweaks.outputs.cache_youchoose_hit != 'true'
         run: |
-          git clone --quiet --depth=1 https://github.com/Tonwalter888/YouChooseQuality.git
+          git clone --quiet --depth=1 https://github.com/PoomSmart/YouChooseQuality.git
           cd YouChooseQuality && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
           mv packages/*.deb ${{ github.workspace }}/youchoose.deb
 
@@ -322,7 +323,7 @@ jobs:
         if: inputs.ythold == true && steps.cache_tweaks.outputs.cache_ythold_hit != 'true'
         run: |
           git clone --quiet --depth=1 https://github.com/joshuaseltzer/YTHoldForSpeed.git
-          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
+          cd YTHoldForSpeed && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
           mv packages/*.deb ${{ github.workspace }}/ythold.deb
 
       - name: Clone and Build VolumeBoostYT
@@ -341,6 +342,13 @@ jobs:
           make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
           mv packages/*.deb ${{ github.workspace }}/nativeshare.deb
 
+      - name: Clone and Build YouFixPlaybackIssues
+        if: steps.cache_tweaks.outputs.cache_youfixplaybackissues_hit != 'true'
+        run: |
+          git clone --quiet --depth=1 https://github.com/mrdrvt99/YouFixPlaybackIssues.git
+          cd YouFixPlaybackIssues/YouFixPlaybackIssues && make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless TARGET=iphone:clang:18.6
+          mv packages/*.deb ${{ github.workspace }}/youfixplaybackissues.deb
+          
       - name: Inject Tweaks Into IPA
         run: |
           tweaks=""

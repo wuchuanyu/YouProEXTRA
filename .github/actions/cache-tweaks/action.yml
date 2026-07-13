@@ -7,9 +7,9 @@ inputs:
   youpip:
     required: false
     default: 'true'
-  ytuhd:
-    required: false
-    default: 'true'
+#  ytuhd:
+#    required: false
+#    default: 'true'
   ryd:
     required: false
     default: 'true'
@@ -68,8 +68,8 @@ inputs:
     required: true
   youpip_commit:
     required: true
-  ytuhd_commit:
-    required: true
+#  ytuhd_commit:
+#    required: true
   ryd_commit:
     required: true
   ygs_commit:
@@ -128,10 +128,12 @@ inputs:
   nativeshare_commit:
     required: false
     default: 'disabled'
-
+  youfixplaybackissues_commit:
+    required: true
+    
 outputs:
   cache_youpip_hit:        { value: "${{ steps.cache_youpip.outputs.cache-hit }}" }
-  cache_ytuhd_hit:         { value: "${{ steps.cache_ytuhd.outputs.cache-hit }}" }
+#  cache_ytuhd_hit:         { value: "${{ steps.cache_ytuhd.outputs.cache-hit }}" }
   cache_ryd_hit:           { value: "${{ steps.cache_ryd.outputs.cache-hit }}" }
   cache_ygs_hit:           { value: "${{ steps.cache_ygs.outputs.cache-hit }}" }
   cache_ytvo_hit:          { value: "${{ steps.cache_ytvo.outputs.cache-hit }}" }
@@ -153,6 +155,7 @@ outputs:
   cache_ythold_hit:        { value: "${{ steps.cache_ythold.outputs.cache-hit }}" }
   cache_volumeboost_hit:   { value: "${{ steps.cache_volumeboost.outputs.cache-hit }}" }
   cache_nativeshare_hit:   { value: "${{ steps.cache_nativeshare.outputs.cache-hit }}" }
+  cache_youfixplaybackissues_hit: { value: "${{ steps.cache_youfixplaybackissues.outputs.cache-hit }}" }
 
 runs:
   using: composite
@@ -165,12 +168,12 @@ runs:
         path: ${{ github.workspace }}/youpip.deb
         key: youpip-${{ inputs.youpip_commit }}-sdk${{ inputs.sdk_version }}
 
-    - uses: actions/cache@v6
-      if: inputs.ytuhd == 'true'
-      id: cache_ytuhd
-      with:
-        path: ${{ github.workspace }}/ytuhd.deb
-        key: ytuhd-v2-${{ inputs.ytuhd_commit }}-sdk${{ inputs.sdk_version }}
+#    - uses: actions/cache@v6
+#      if: inputs.ytuhd == 'true'
+#      id: cache_ytuhd
+#      with:
+#        path: ${{ github.workspace }}/ytuhd.deb
+#        key: ytuhd-v2-${{ inputs.ytuhd_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v6
       if: inputs.ryd == 'true'
@@ -245,7 +248,7 @@ runs:
       id: cache_youchoose
       with:
         path: ${{ github.workspace }}/youchoose.deb
-        key: youchoose-${{ inputs.youchoose_commit }}-sdk${{ inputs.sdk_version }}
+        key: youchoose-v1-${{ inputs.youchoose_commit }}-sdk${{ inputs.sdk_version }}
 
     - uses: actions/cache@v6
       if: inputs.ytsilentvote == 'true' && inputs.ytsilentvote_commit != ''
@@ -316,3 +319,9 @@ runs:
       with:
         path: ${{ github.workspace }}/nativeshare.deb
         key: nativeshare-${{ inputs.nativeshare_commit }}-sdk${{ inputs.sdk_version }}
+        
+    - uses: actions/cache@v6
+      id: cache_youfixplaybackissues
+      with:
+        path: ${{ github.workspace }}/youfixplaybackissues.deb
+        key: youfixplaybackissues-${{ inputs.youfixplaybackissues_commit }}-sdk${{ inputs.sdk_version }}
