@@ -292,6 +292,19 @@ build_native_share_deb() {
   )
 }
 
+build_playback_fix_deb() {
+  local output="$1"
+  [[ -f "$output" ]] && { log "Using existing $(basename "$output")"; return; }
+  git clone --quiet --depth=1 https://github.com/mrdrvt99/YouFixPlaybackIssues.git
+  (
+    cd YouFixPlaybackIssues/YouFixPlaybackIssues
+    suppress_deprecated_warnings
+    make clean package THEOS="$THEOS" DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless \
+      TARGET=iphone:clang:18.6 CFLAGS+="$LOCAL_WARNING_CFLAGS" OBJCFLAGS+="$LOCAL_WARNING_CFLAGS"
+    mv packages/*.deb "$output"
+  )
+}
+
 collect_tweaks_arg() {
   local include_appex="$1"
   local tweaks=""

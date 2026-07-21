@@ -9,6 +9,19 @@ DEMC=true
 YTHOLD=false
 VOLUMEBOOST=false
 NATIVESHARE=false
+YOUPIP=true
+RYD=true
+YTABCONFIG=true
+YOUQUALITY=true
+YOUCHOOSE=false
+GONERINO=false
+YOUGETCAPTION=false
+YOUSLIDER=true
+YTSILENTVOTE=true
+YTWEAKS=true
+YOUSPEED=true
+YOUMUTE=true
+YOULOOP=true
 OPENSAFARI=true
 
 usage() {
@@ -25,6 +38,9 @@ Options:
   --ythold BOOL
   --volumeboost BOOL
   --nativeshare BOOL
+  --youpip BOOL --ryd BOOL --ytabconfig BOOL --youquality BOOL
+  --youchoose BOOL --gonerino BOOL --yougetcaption BOOL --youslider BOOL
+  --ytsilentvote BOOL --ytweaks BOOL --youspeed BOOL --youmute BOOL --youloop BOOL
   --opensafari BOOL
   --work-dir DIR
   --output-dir DIR
@@ -41,6 +57,19 @@ while [[ $# -gt 0 ]]; do
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
+    --youpip) YOUPIP="$(bool_value "$2")"; shift 2 ;;
+    --ryd) RYD="$(bool_value "$2")"; shift 2 ;;
+    --ytabconfig) YTABCONFIG="$(bool_value "$2")"; shift 2 ;;
+    --youquality) YOUQUALITY="$(bool_value "$2")"; shift 2 ;;
+    --youchoose) YOUCHOOSE="$(bool_value "$2")"; shift 2 ;;
+    --gonerino) GONERINO="$(bool_value "$2")"; shift 2 ;;
+    --yougetcaption) YOUGETCAPTION="$(bool_value "$2")"; shift 2 ;;
+    --youslider) YOUSLIDER="$(bool_value "$2")"; shift 2 ;;
+    --ytsilentvote) YTSILENTVOTE="$(bool_value "$2")"; shift 2 ;;
+    --ytweaks) YTWEAKS="$(bool_value "$2")"; shift 2 ;;
+    --youspeed) YOUSPEED="$(bool_value "$2")"; shift 2 ;;
+    --youmute) YOUMUTE="$(bool_value "$2")"; shift 2 ;;
+    --youloop) YOULOOP="$(bool_value "$2")"; shift 2 ;;
     --opensafari) OPENSAFARI="$(bool_value "$2")"; shift 2 ;;
     --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
     --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
@@ -70,23 +99,25 @@ if [[ "$YOUPRO" = "true" ]]; then
   build_plain_deb https://github.com/mrdrvt99/YouPro.git YouPro "$run_dir/YouPro.deb"
 fi
 
-build_make_deb https://github.com/PoomSmart/YouPiP.git YouPiP "$run_dir/youpip.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/Tonwalter888/YTUHD.git YTUHD "$run_dir/ytuhd.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/PoomSmart/Return-YouTube-Dislikes.git Return-YouTube-Dislikes "$run_dir/ryd.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUPIP" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouPiP.git YouPiP "$run_dir/youpip.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$RYD" = "true" ]] && build_make_deb https://github.com/PoomSmart/Return-YouTube-Dislikes.git Return-YouTube-Dislikes "$run_dir/ryd.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/PoomSmart/YouGroupSettings.git YouGroupSettings "$run_dir/ygs.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/PoomSmart/YTABConfig.git YTABConfig "$run_dir/ytabconfig.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/PoomSmart/YouQuality.git YouQuality "$run_dir/youquality.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/PoomSmart/YouSpeed.git YouSpeed "$run_dir/youspeed.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/PoomSmart/YouMute.git YouMute "$run_dir/ym.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/bhackel/YouLoop.git YouLoop "$run_dir/youloop.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/hbang/Alderis.git Alderis "$run_dir/alderis.deb" ARCHS=arm64
-build_make_deb https://github.com/PoomSmart/YouSlider.git YouSlider "$run_dir/youslider.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/Tonwalter888/YouChooseQuality.git YouChooseQuality "$run_dir/youchoose.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/PoomSmart/YTSilentVote.git YTSilentVote "$run_dir/ytnovote.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/castdrian/Gonerino.git Gonerino "$run_dir/gonerino.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/fosterbarnes/YTweaks.git YTweaks "$run_dir/ytweaks.deb" THEOS_PACKAGE_SCHEME=rootless
-build_make_deb https://github.com/PoomSmart/YouGetCaption.git YouGetCaption "$run_dir/ygc.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTABCONFIG" = "true" ]] && build_make_deb https://github.com/PoomSmart/YTABConfig.git YTABConfig "$run_dir/ytabconfig.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUQUALITY" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouQuality.git YouQuality "$run_dir/youquality.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUSPEED" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouSpeed.git YouSpeed "$run_dir/youspeed.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUMUTE" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouMute.git YouMute "$run_dir/ym.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOULOOP" = "true" ]] && build_make_deb https://github.com/bhackel/YouLoop.git YouLoop "$run_dir/youloop.deb" THEOS_PACKAGE_SCHEME=rootless
+if [[ "$YOUSLIDER" = "true" ]]; then
+  build_make_deb https://github.com/hbang/Alderis.git Alderis "$run_dir/alderis.deb" ARCHS=arm64
+  build_make_deb https://github.com/PoomSmart/YouSlider.git YouSlider "$run_dir/youslider.deb" THEOS_PACKAGE_SCHEME=rootless
+fi
+[[ "$YOUCHOOSE" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouChooseQuality.git YouChooseQuality "$run_dir/youchoose.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTSILENTVOTE" = "true" ]] && build_make_deb https://github.com/PoomSmart/YTSilentVote.git YTSilentVote "$run_dir/ytnovote.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$GONERINO" = "true" ]] && build_make_deb https://github.com/castdrian/Gonerino.git Gonerino "$run_dir/gonerino.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTWEAKS" = "true" ]] && build_make_deb https://github.com/fosterbarnes/YTweaks.git YTweaks "$run_dir/ytweaks.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUGETCAPTION" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouGetCaption.git YouGetCaption "$run_dir/ygc.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/PoomSmart/IAmYouTube.git IAmYouTube "$run_dir/imyt.deb" THEOS_PACKAGE_SCHEME=rootless
+build_playback_fix_deb "$run_dir/youfixplaybackissues.deb"
 
 if [[ "$DEMC" = "true" ]]; then
   build_make_deb https://github.com/therealFoxster/DontEatMyContent.git DontEatMyContent "$run_dir/demc.deb" THEOS_PACKAGE_SCHEME=rootless
@@ -95,7 +126,7 @@ if [[ "$ISPONSORBLOCK" = "true" ]]; then
   build_make_deb https://github.com/Galactic-Dev/iSponsorBlock.git iSponsorBlock "$run_dir/isponsorblock.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
 fi
 if [[ "$YTHOLD" = "true" ]]; then
-  build_make_deb https://github.com/joshuaseltzer/YTHoldForSpeed.git YTHoldForSpeed "$run_dir/ythold.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
+  build_make_deb https://github.com/joshuaseltzer/YTHoldForSpeed.git YTHoldForSpeed "$run_dir/ythold.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
 fi
 if [[ "$VOLUMEBOOST" = "true" ]]; then
   build_make_deb https://github.com/VasirakCalgux/VolumeBoostYT.git VolumeBoostYT "$run_dir/volumeboost.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64

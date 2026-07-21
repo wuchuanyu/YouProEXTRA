@@ -8,7 +8,6 @@ IPA_PATH=""
 DISPLAY_NAME="YouTube"
 BUNDLE_ID="com.google.ios.youtube"
 YOUPIP=true
-YTUHD=true
 RYD=true
 YTABCONFIG=true
 YOUQUALITY=true
@@ -31,7 +30,6 @@ Usage:
 
 Options:
   --youpip BOOL
-  --ytuhd BOOL
   --ryd BOOL
   --ytabconfig BOOL
   --youquality BOOL
@@ -55,7 +53,6 @@ while [[ $# -gt 0 ]]; do
     --display-name) DISPLAY_NAME="$2"; shift 2 ;;
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
     --youpip) YOUPIP="$(bool_value "$2")"; shift 2 ;;
-    --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
     --ryd) RYD="$(bool_value "$2")"; shift 2 ;;
     --ytabconfig) YTABCONFIG="$(bool_value "$2")"; shift 2 ;;
     --youquality) YOUQUALITY="$(bool_value "$2")"; shift 2 ;;
@@ -100,18 +97,18 @@ build_plain_deb https://github.com/mrdrvt99/YTL.git YTL "$run_dir/ytlite.deb"
 YTL_VERSION="$(grep '^Version:' YTL/DEBIAN/control | awk '{print $2}')"
 
 [[ "$YOUPIP" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouPiP.git YouPiP "$run_dir/youpip.deb" THEOS_PACKAGE_SCHEME=rootless
-[[ "$YTUHD" = "true" ]] && build_make_deb https://github.com/Tonwalter888/YTUHD.git YTUHD "$run_dir/ytuhd.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$RYD" = "true" ]] && build_make_deb https://github.com/PoomSmart/Return-YouTube-Dislikes.git Return-YouTube-Dislikes "$run_dir/ryd.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/PoomSmart/YouGroupSettings.git YouGroupSettings "$run_dir/ygs.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$YTABCONFIG" = "true" ]] && build_make_deb https://github.com/PoomSmart/YTABConfig.git YTABConfig "$run_dir/ytabconfig.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$YOUQUALITY" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouQuality.git YouQuality "$run_dir/youquality.deb" THEOS_PACKAGE_SCHEME=rootless
-[[ "$YOUCHOOSE" = "true" ]] && build_make_deb https://github.com/Tonwalter888/YouChooseQuality.git YouChooseQuality "$run_dir/youchoose.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YOUCHOOSE" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouChooseQuality.git YouChooseQuality "$run_dir/youchoose.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$GONERINO" = "true" ]] && build_make_deb https://github.com/castdrian/Gonerino.git Gonerino "$run_dir/gonerino.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$YOUGETCAPTION" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouGetCaption.git YouGetCaption "$run_dir/ygc.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$DEMC" = "true" ]] && build_make_deb https://github.com/therealFoxster/DontEatMyContent.git DontEatMyContent "$run_dir/demc.deb" THEOS_PACKAGE_SCHEME=rootless
-[[ "$YTHOLD" = "true" ]] && build_make_deb https://github.com/joshuaseltzer/YTHoldForSpeed.git YTHoldForSpeed "$run_dir/ythold.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:latest:15.0
+[[ "$YTHOLD" = "true" ]] && build_make_deb https://github.com/joshuaseltzer/YTHoldForSpeed.git YTHoldForSpeed "$run_dir/ythold.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64 TARGET=iphone:clang:18.6
 [[ "$VOLUMEBOOST" = "true" ]] && build_make_deb https://github.com/VasirakCalgux/VolumeBoostYT.git VolumeBoostYT "$run_dir/volumeboost.deb" THEOS_PACKAGE_SCHEME=rootless ARCHS=arm64
 [[ "$NATIVESHARE" = "true" ]] && build_native_share_deb "$run_dir/nativeshare.deb"
+build_playback_fix_deb "$run_dir/youfixplaybackissues.deb"
 
 tweaks="$(collect_tweaks_arg "$OPENSAFARI")"
 output="YouTubePlus_${YT_VERSION}_${YTL_VERSION}.ipa"
