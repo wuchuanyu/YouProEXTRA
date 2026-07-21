@@ -10,7 +10,7 @@ YouTube IPA builder packed with customizable tweaks. Also Known as Youtubemaxxin
 - **[YTMusicUltimate](https://github.com/mrdrvt99/YTMusicUltimate)** - Background playback, ad removal, Downloads and other small improvements.
 - [YouPip](https://github.com/PoomSmart/YouPiP) -  Enables native PiP in iOS YouTube app.
 - [YTUHD](https://github.com/Tonwalter888/YTUHD) - Unlocks 1440p and 2160p resolutions in iOS YouTube app.**(unstable tweak)**
-  > ⚠️ **Removed:** No longer functional. Temporarily disabled.
+  > ⚠️ **NOTE:** YTUHD is not compatible with +21.25.5 versions.
 - [ReturnYoutubeDislikes](https://github.com/PoomSmart/Return-YouTube-Dislikes) -  Brings Back Dislikes On YouTube iOS. 
 - [YouMute](https://github.com/PoomSmart/YouMute) - Mutes/unmutes videos on iOS YouTube app faster.**(custom build)**
 - [YouSpeed](https://github.com/PoomSmart/YouSpeed) - Views/changes video speed in iOS YouTube app faster.**(custom build)**
@@ -84,7 +84,15 @@ NOTE: If you modified workflow files, delete any existing caches in the Actions 
 
 ## Supported YouTube version
 <ul>
-   <li><strong>Latest confirmed:</strong> 21.28.3</li>
-   <li><strong>Date tested:</strong> July 13, 2026</li>
-   <li><strong>YouPro(21.26.4)/YTLite/YTKP:</strong> 0.3/5.2.1/5.8.8</li>
+   <li><strong>Latest confirmed:</strong> 21.24.3</li>
+  
+  > [!WARNING]  
+  > - +21.25.5 version and newer are **not recommended**!  
+  > - If you want a newer version, you can build it in the **Actions** tab.
+
+  > [!NOTE]
+  > - iOS14+ builds are available now in releases page!
+  
+   <li><strong>Date tested:</strong> July 20, 2026</li>
+   <li><strong>YouPro/YTLite/YTKP:</strong> 0.3/5.2.2/5.9.4</li>
 </ul>
