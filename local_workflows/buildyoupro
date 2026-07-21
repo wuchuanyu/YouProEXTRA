@@ -9,6 +9,7 @@ DISPLAY_NAME="YouTube"
 BUNDLE_ID="com.google.ios.youtube"
 DEMC=true
 ISPONSORBLOCK=true
+YTUHD=true
 OPENSAFARI=true
 
 usage() {
@@ -22,6 +23,7 @@ Usage:
 Options:
   --demc BOOL
   --isponsorblock BOOL
+  --ytuhd BOOL
   --opensafari BOOL
   -h, --help
 USAGE
@@ -36,6 +38,7 @@ while [[ $# -gt 0 ]]; do
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
     --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
+    --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
     --opensafari) OPENSAFARI="$(bool_value "$2")"; shift 2 ;;
     --work-dir) LOCAL_WORK_DIR="$2"; shift 2 ;;
     --output-dir) LOCAL_OUTPUT_DIR="$2"; shift 2 ;;
@@ -55,7 +58,7 @@ YT_VERSION="$(youtube_version_from_ipa youtube.ipa ytextracted)"
 [[ -n "$YT_VERSION" ]] || die "could not extract YouTube version"
 rm -rf ytextracted
 
-"$SCRIPT_DIR/_build_tweaks" --youpro true --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold false --volumeboost false --nativeshare false --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
+"$SCRIPT_DIR/_build_tweaks" --youpro true --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ytuhd "$YTUHD" --ythold false --volumeboost false --nativeshare false --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
 cp -R "$run_dir/tweaks-output/built-debs/"* "$run_dir/"
 
 YOUPRO_VERSION="$(deb_version YouPro.deb "$run_dir/deb-control")"

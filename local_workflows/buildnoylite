@@ -9,6 +9,7 @@ DISPLAY_NAME="YouTube"
 BUNDLE_ID="com.google.ios.youtube"
 DEMC=true
 ISPONSORBLOCK=true
+YTUHD=true
 YTHOLD=false
 VOLUMEBOOST=false
 NATIVESHARE=false
@@ -25,6 +26,7 @@ Usage:
 Options:
   --demc BOOL
   --isponsorblock BOOL
+  --ytuhd BOOL
   --ythold BOOL
   --volumeboost BOOL
   --nativeshare BOOL
@@ -42,6 +44,7 @@ while [[ $# -gt 0 ]]; do
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
     --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
+    --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
@@ -64,7 +67,7 @@ YT_VERSION="$(youtube_version_from_ipa youtube.ipa ytextracted)"
 [[ -n "$YT_VERSION" ]] || die "could not extract YouTube version"
 rm -rf ytextracted
 
-"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
+"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ytuhd "$YTUHD" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
 cp -R "$run_dir/tweaks-output/built-debs/"* "$run_dir/"
 
 ensure_cyan

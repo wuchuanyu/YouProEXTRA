@@ -10,6 +10,7 @@ YTHOLD=false
 VOLUMEBOOST=false
 NATIVESHARE=false
 YOUPIP=true
+YTUHD=true
 RYD=true
 YTABCONFIG=true
 YOUQUALITY=true
@@ -38,7 +39,7 @@ Options:
   --ythold BOOL
   --volumeboost BOOL
   --nativeshare BOOL
-  --youpip BOOL --ryd BOOL --ytabconfig BOOL --youquality BOOL
+  --youpip BOOL --ytuhd BOOL --ryd BOOL --ytabconfig BOOL --youquality BOOL
   --youchoose BOOL --gonerino BOOL --yougetcaption BOOL --youslider BOOL
   --ytsilentvote BOOL --ytweaks BOOL --youspeed BOOL --youmute BOOL --youloop BOOL
   --opensafari BOOL
@@ -58,6 +59,7 @@ while [[ $# -gt 0 ]]; do
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
     --youpip) YOUPIP="$(bool_value "$2")"; shift 2 ;;
+    --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
     --ryd) RYD="$(bool_value "$2")"; shift 2 ;;
     --ytabconfig) YTABCONFIG="$(bool_value "$2")"; shift 2 ;;
     --youquality) YOUQUALITY="$(bool_value "$2")"; shift 2 ;;
@@ -100,6 +102,7 @@ if [[ "$YOUPRO" = "true" ]]; then
 fi
 
 [[ "$YOUPIP" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouPiP.git YouPiP "$run_dir/youpip.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTUHD" = "true" ]] && build_make_deb https://github.com/Tonwalter888/YTUHD.git YTUHD "$run_dir/ytuhd.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$RYD" = "true" ]] && build_make_deb https://github.com/PoomSmart/Return-YouTube-Dislikes.git Return-YouTube-Dislikes "$run_dir/ryd.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/PoomSmart/YouGroupSettings.git YouGroupSettings "$run_dir/ygs.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$YTABCONFIG" = "true" ]] && build_make_deb https://github.com/PoomSmart/YTABConfig.git YTABConfig "$run_dir/ytabconfig.deb" THEOS_PACKAGE_SCHEME=rootless

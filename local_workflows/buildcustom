@@ -12,6 +12,7 @@ BUNDLE_ID="com.google.ios.youtube"
 CUSTOM_NAME="YouProExtra"
 DEMC=true
 ISPONSORBLOCK=true
+YTUHD=true
 YTHOLD=false
 VOLUMEBOOST=false
 NATIVESHARE=false
@@ -31,6 +32,7 @@ Options:
   --custom-name NAME       Name prefix for the output IPA (default: YouProExtra)
   --demc BOOL
   --isponsorblock BOOL
+  --ytuhd BOOL
   --ythold BOOL
   --volumeboost BOOL
   --nativeshare BOOL
@@ -51,6 +53,7 @@ while [[ $# -gt 0 ]]; do
     --custom-name) CUSTOM_NAME="$2"; shift 2 ;;
     --demc) DEMC="$(bool_value "$2")"; shift 2 ;;
     --isponsorblock) ISPONSORBLOCK="$(bool_value "$2")"; shift 2 ;;
+    --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
     --ythold) YTHOLD="$(bool_value "$2")"; shift 2 ;;
     --volumeboost) VOLUMEBOOST="$(bool_value "$2")"; shift 2 ;;
     --nativeshare) NATIVESHARE="$(bool_value "$2")"; shift 2 ;;
@@ -93,7 +96,7 @@ validate_deb "$deb_name"
 CUSTOM_DEB_VERSION="$(deb_version "$deb_name" "$run_dir/custom-deb-control")"
 [[ -n "$CUSTOM_DEB_VERSION" ]] || die "could not extract custom deb version"
 
-"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
+"$SCRIPT_DIR/_build_tweaks" --youpro false --isponsorblock "$ISPONSORBLOCK" --demc "$DEMC" --ytuhd "$YTUHD" --ythold "$YTHOLD" --volumeboost "$VOLUMEBOOST" --nativeshare "$NATIVESHARE" --opensafari "$OPENSAFARI" --output-dir "$run_dir/tweaks-output"
 cp -R "$run_dir/tweaks-output/built-debs/"* "$run_dir/"
 
 ensure_cyan

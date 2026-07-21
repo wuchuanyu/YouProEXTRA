@@ -9,6 +9,7 @@ DISPLAY_NAME="YouTube"
 BUNDLE_ID="com.google.ios.youtube"
 TWEAK_CHOICE=""
 YOUPIP=true
+YTUHD=true
 RYD=true
 YTABCONFIG=true
 YOUQUALITY=true
@@ -33,7 +34,7 @@ Required:
   --tweak-choice TubeLRD|DLTube
 
 Options:
-  --youpip BOOL --ryd BOOL --ytabconfig BOOL --youquality BOOL
+  --youpip BOOL --ytuhd BOOL --ryd BOOL --ytabconfig BOOL --youquality BOOL
   --demc BOOL --youchoose BOOL --gonerino BOOL --yougetcaption BOOL
   --ythold BOOL --volumeboost BOOL --nativeshare BOOL --opensafari BOOL
   -h, --help
@@ -49,6 +50,7 @@ while [[ $# -gt 0 ]]; do
     --bundle-id) BUNDLE_ID="$2"; shift 2 ;;
     --tweak-choice) TWEAK_CHOICE="$2"; shift 2 ;;
     --youpip) YOUPIP="$(bool_value "$2")"; shift 2 ;;
+    --ytuhd) YTUHD="$(bool_value "$2")"; shift 2 ;;
     --ryd) RYD="$(bool_value "$2")"; shift 2 ;;
     --ytabconfig) YTABCONFIG="$(bool_value "$2")"; shift 2 ;;
     --youquality) YOUQUALITY="$(bool_value "$2")"; shift 2 ;;
@@ -100,6 +102,7 @@ TWEAK_VERSION="$(grep '^Version:' base_tweak/DEBIAN/control | awk '{print $2}')"
 [[ -n "$TWEAK_VERSION" ]] || die "could not extract base tweak version"
 
 [[ "$YOUPIP" = "true" ]] && build_make_deb https://github.com/PoomSmart/YouPiP.git YouPiP "$run_dir/youpip.deb" THEOS_PACKAGE_SCHEME=rootless
+[[ "$YTUHD" = "true" ]] && build_make_deb https://github.com/Tonwalter888/YTUHD.git YTUHD "$run_dir/ytuhd.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$RYD" = "true" ]] && build_make_deb https://github.com/PoomSmart/Return-YouTube-Dislikes.git Return-YouTube-Dislikes "$run_dir/ryd.deb" THEOS_PACKAGE_SCHEME=rootless
 build_make_deb https://github.com/PoomSmart/YouGroupSettings.git YouGroupSettings "$run_dir/ygs.deb" THEOS_PACKAGE_SCHEME=rootless
 [[ "$YTABCONFIG" = "true" ]] && build_make_deb https://github.com/PoomSmart/YTABConfig.git YTABConfig "$run_dir/ytabconfig.deb" THEOS_PACKAGE_SCHEME=rootless
